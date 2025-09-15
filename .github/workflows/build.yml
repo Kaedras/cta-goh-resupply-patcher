@@ -1,0 +1,15 @@
+name: Build patcher
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build patcher
+        run: |
+          mkdir build && cd build
+          cmake ..
+          make -j$(nproc)
