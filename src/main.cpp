@@ -37,7 +37,8 @@ int main(int argc, char** argv) {
       .help("increase output verbosity")
       .flag();
 
-  program.add_argument("-V", "--valour").help("patch valour instead of vanilla game").flag();
+  program.add_argument("-V", "--valour").help("patch valour").flag();
+  program.add_argument("-H", "--hotmod").help("patch hotmod").flag();
   program.add_argument("-o", "--out").help("output directory").required();
 
   try {
@@ -56,6 +57,8 @@ int main(int argc, char** argv) {
   try {
     if (program.is_used("--valour")) {
       p.patchValour();
+    } else if (program.is_used("--hotmod")) {
+      p.patchHotmod();
     } else {
       p.patchVanilla();
     }

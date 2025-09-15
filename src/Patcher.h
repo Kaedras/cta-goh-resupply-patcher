@@ -24,6 +24,12 @@ public:
    */
   void patchValour() const noexcept(false);
 
+  /**
+   * @brief Patch "Hotmod 1968" resupply values (https://steamcommunity.com/sharedfiles/filedetails/?id=2614199156)
+   * @throw std::runtime_error
+   */
+  void patchHotmod() const noexcept(false);
+
 private:
   static constexpr size_t bufferSize = 1024 * 1024;
 

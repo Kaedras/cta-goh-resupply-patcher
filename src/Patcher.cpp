@@ -30,6 +30,8 @@ namespace {
   constexpr array valourArchives = {pair{"britain.pak", "properties/ammo_eng.inc"}, pair{"fra.pak", "properties/ammo_fra.inc"},    pair{"hun.pak", "properties/ammo_hun.inc"},
                                     pair{"ita.pak", "properties/ammo_ita.inc"},     pair{"jap.pak", "properties/ammo_jap.inc"},    pair{"pol.pak", "properties/ammo_pol.inc"},
                                     pair{"usaf.pak", "properties/ammo_usa.inc"},    pair{"general.pak", "properties/resupply.inc"}};
+
+  constexpr array hotmodArchives = {pair{"gamelogic.pak", "properties/resupply_hotmod.inc"}, pair{"gamelogic.pak", "properties/resupply_vanilla.inc"}};
 } // namespace
 
 Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
@@ -44,6 +46,14 @@ void Patcher::patchValour() const noexcept(false) {
   fs::path dataPath = m_gamePath / "../../workshop/content/400750/2537987794/resource";
 
   for (const auto& [archive, file] : valourArchives) {
+    patchFile(dataPath / archive, file);
+  }
+}
+
+void Patcher::patchHotmod() const noexcept(false) {
+  fs::path dataPath = m_gamePath / "../../workshop/content/400750/2614199156/resource";
+
+  for (const auto& [archive, file] : hotmodArchives) {
     patchFile(dataPath / archive, file);
   }
 }
