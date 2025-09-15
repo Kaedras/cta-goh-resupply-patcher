@@ -7,11 +7,11 @@ Please note that there has not been any testing on Windows.
 ## Usage
 
 ```commandline
-resupply_patcher -o OUTPUT_PATH
+resupply_patcher OUTPUT_PATH
 ```
 
 ```commandline
-resupply_patcher --valour -o OUTPUT_PATH
+resupply_patcher --valour OUTPUT_PATH
 ```
 
 ## Dependencies
