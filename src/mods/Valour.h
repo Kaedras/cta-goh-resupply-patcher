@@ -2,6 +2,10 @@
 
 #include "Mod.h"
 
+/**
+ * valour
+ * https://steamcommunity.com/sharedfiles/filedetails/?id=2537987794
+ */
 template <std::size_t T>
 class ModValour : public Mod<T> {
 public:

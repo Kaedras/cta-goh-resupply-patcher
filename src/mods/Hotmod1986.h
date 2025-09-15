@@ -2,6 +2,10 @@
 
 #include "Mod.h"
 
+/**
+ * Hotmod 1968
+ * https://steamcommunity.com/sharedfiles/filedetails/?id=2614199156
+ */
 template <std::size_t T>
 class ModHotmod : public Mod<T>
 {
