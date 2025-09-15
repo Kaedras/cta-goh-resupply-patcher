@@ -9,13 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Upgrade runner
+      - name: Install gcc-15
         run: |
-          sudo apt-get update && sudo apt-get upgrade -y
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get install -y libzip-dev
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository ppa:puni070/gcc-noble -y
+          sudo apt update
+          sudo apt-get install -y gcc-15 g++-15
+          
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-15 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-15 100
 
       - name: Build patcher
         run: |
