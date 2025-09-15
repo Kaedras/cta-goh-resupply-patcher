@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "mods/Mod.h"
+
 class Patcher {
 public:
   /**
@@ -18,24 +20,8 @@ public:
    */
   void patchVanilla() const noexcept(false);
 
-  /**
-   * @brief Patch "Valour" resupply values
-   * https://steamcommunity.com/sharedfiles/filedetails/?id=2537987794
-   * @throw std::runtime_error
-   */
-  void patchValour() const noexcept(false);
-
-  /**
-   * @brief Patch "Hotmod 1968" resupply values https://steamcommunity.com/sharedfiles/filedetails/?id=2614199156
-   * @throw std::runtime_error
-   */
-  void patchHotmod() const noexcept(false);
-
-  /**
-   * @brief Patch "west 81" resupply values (https://steamcommunity.com/sharedfiles/filedetails/?id=2897299509)
-   * @throw std::runtime_error
-   */
-  void patchWest81() const noexcept(false);
+  template <size_t T>
+  void patchMod(Mod<T> mod) const noexcept(false);
 
 private:
   static constexpr size_t bufferSize = 1024 * 1024;
@@ -121,9 +107,6 @@ private:
    * @throw std::runtime_error
    */
   static void replaceNumberInString(std::string& line, int newValue) noexcept(false);
-
-  template <size_t T>
-  void patchMod(const std::array<std::pair<const char*,const char*>, T>& archives, const char* workshopID) const;
 
   static void ltrim(std::string& line) noexcept;
   static void rtrim(std::string& line) noexcept;

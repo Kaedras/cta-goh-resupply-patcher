@@ -5,6 +5,7 @@
 #include <spdlog/spdlog.h>
 
 #include "Patcher.h"
+#include "Mods.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -57,11 +58,11 @@ int main(int argc, char** argv) {
 
   try {
     if (program.is_used("--valour")) {
-      p.patchValour();
+      p.patchMod(mods::valour);
     } else if (program.is_used("--hotmod")) {
-      p.patchHotmod();
+      p.patchMod(mods::hotmod);
     } else if (program.is_used("--west81")) {
-      p.patchWest81();
+      p.patchMod(mods::west81);
     } else {
       p.patchVanilla();
     }

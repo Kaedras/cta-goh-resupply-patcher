@@ -53,6 +53,10 @@ add_executable(resupply_patcher
         src/Patcher.h
         src/Timer.cpp
         src/Timer.h
+        src/Mods.h
+        src/mods/Valour.h
+        src/mods/Hotmod1986.h
+        src/mods/West81.h
 )
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)

@@ -14,6 +14,7 @@
 
 #include "Settings.h"
 #include "Timer.h"
+#include "Mods.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -31,8 +32,6 @@ namespace {
                                     pair{"ita.pak", "properties/ammo_ita.inc"},     pair{"jap.pak", "properties/ammo_jap.inc"},    pair{"pol.pak", "properties/ammo_pol.inc"},
                                     pair{"usaf.pak", "properties/ammo_usa.inc"},    pair{"general.pak", "properties/resupply.inc"}};
 
-  constexpr array hotmodArchives = {pair{"gamelogic.pak", "properties/resupply_hotmod.inc"}, pair{"gamelogic.pak", "properties/resupply_vanilla.inc"}};
-  constexpr array west81Archives = {pair{"engine.pak", "properties/resupply_hotmod.inc"}};
 } // namespace
 
 Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
@@ -43,23 +42,11 @@ void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
-void Patcher::patchValour() const noexcept(false) {
-  patchMod(valourArchives, "2537987794");
-}
-
-void Patcher::patchHotmod() const noexcept(false) {
-  patchMod(hotmodArchives, "2614199156");
-}
-
-void Patcher::patchWest81() const noexcept(false) {
-  patchMod(west81Archives, "2897299509");
-}
-
 template <size_t T>
-void Patcher::patchMod(const std::array<std::pair<const char*,const char*>, T>& archives, const char* workshopID) const {
-  fs::path path = m_workshopPath / workshopID / "resource";
+void Patcher::patchMod(Mod<T> mod) const {
+  fs::path path = m_workshopPath / mod.workshopID / "resource";
 
-  for (const auto& [archive, file] : archives) {
+  for (const auto& [archive, file] : mod.archives) {
     vector<char> data = loadFromArchive(path / archive, file);
     patch(data);
     saveToFile(data, m_outputPath / file);
