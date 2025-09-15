@@ -3,24 +3,20 @@
 #include "Mod.h"
 
 template <std::size_t T>
-class ModValour : public Mod<T>
-{
+class ModValour : public Mod<T> {
 public:
-    constexpr explicit ModValour(std::array<std::pair<const char*, const char*>, T> archives) :
-        Mod<T>(archives, "2537987794")
-    {
-    }
+  constexpr explicit ModValour(std::array<Archive, T> archives) :
+    Mod<T>(archives, "2537987794") {}
 };
 
-namespace mods
-{
-    static constexpr ModValour valour{
-        std::array{
-            std::pair{"britain.pak", "properties/ammo_eng.inc"}, std::pair{"fra.pak", "properties/ammo_fra.inc"},
-            std::pair{"hun.pak", "properties/ammo_hun.inc"},
-            std::pair{"ita.pak", "properties/ammo_ita.inc"}, std::pair{"jap.pak", "properties/ammo_jap.inc"},
-            std::pair{"pol.pak", "properties/ammo_pol.inc"},
-            std::pair{"usaf.pak", "properties/ammo_usa.inc"}, std::pair{"general.pak", "properties/resupply.inc"}
-        }
-    };
+namespace mods {
+  static constexpr ModValour valour{
+      std::array{
+          Archive{"britain.pak", "properties/ammo_eng.inc"}, Archive{"fra.pak", "properties/ammo_fra.inc"},
+          Archive{"hun.pak", "properties/ammo_hun.inc"},
+          Archive{"ita.pak", "properties/ammo_ita.inc"}, Archive{"jap.pak", "properties/ammo_jap.inc"},
+          Archive{"pol.pak", "properties/ammo_pol.inc"},
+          Archive{"usaf.pak", "properties/ammo_usa.inc"}, Archive{"general.pak", "properties/resupply.inc"}
+      }
+  };
 }
