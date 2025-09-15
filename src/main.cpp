@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
   program.add_argument("-V", "--valour").help("patch valour").flag();
   program.add_argument("-H", "--hotmod").help("patch hotmod").flag();
   program.add_argument("-W", "--west81").help("patch west81").flag();
-  program.add_argument("-o", "--out").help("output directory").required();
+  program.add_argument("out").help("output directory").required();
 
   try {
     program.parse_args(argc, argv);
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
   spdlog::set_level(verbosityToLogLevel(verbosity));
 
-  fs::path outDir = program.get<string>("-o");
+  fs::path outDir = program.get<string>("out");
   Patcher  p(outDir);
 
   try {
