@@ -32,19 +32,19 @@ namespace {
                                     pair{"usaf.pak", "properties/ammo_usa.inc"},    pair{"general.pak", "properties/resupply.inc"}};
 } // namespace
 
-Patcher::Patcher(std::filesystem::path outputDir) noexcept : m_outputPath(std::move(outputDir)) {}
+Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
+  m_outputPath(std::move(outputDir)),
+  m_gamePath(getGamePath()) {}
 
 void Patcher::patchVanilla() const noexcept(false) {
-  fs::path gamePath = getGamePath();
-  patchFile(gamePath / "resource/properties.pak", "properties/resupply.inc");
+  patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
 void Patcher::patchValour() const noexcept(false) {
-  fs::path gamePath       = getGamePath();
-  fs::path valourDataPath = gamePath / "../../workshop/content/400750/2537987794/resource";
+  fs::path dataPath = m_gamePath / "../../workshop/content/400750/2537987794/resource";
 
   for (const auto& [archive, file] : valourArchives) {
-    patchFile(valourDataPath / archive, file);
+    patchFile(dataPath / archive, file);
   }
 }
 

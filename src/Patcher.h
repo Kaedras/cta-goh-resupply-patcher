@@ -7,7 +7,10 @@
 
 class Patcher {
 public:
-  explicit Patcher(std::filesystem::path outputDir) noexcept;
+  /**
+   * @throw std::runtime_error When the game directory cannot be found
+   */
+  explicit Patcher(std::filesystem::path outputDir) noexcept(false);
 
   /**
    * @brief Patch vanilla resupply values
@@ -110,4 +113,5 @@ private:
   static void rtrim(std::string& line) noexcept;
 
   std::filesystem::path m_outputPath;
+  std::filesystem::path m_gamePath;
 };
