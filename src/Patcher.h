@@ -19,7 +19,7 @@ public:
   void patchVanilla() const noexcept(false);
 
   /**
-   * @brief Patch Valour resupply values
+   * @brief Patch "Valour" resupply values (https://steamcommunity.com/sharedfiles/filedetails/?id=2537987794)
    * @throw std::runtime_error
    */
   void patchValour() const noexcept(false);
