@@ -39,6 +39,7 @@ int main(int argc, char** argv) {
 
   program.add_argument("-V", "--valour").help("patch valour").flag();
   program.add_argument("-H", "--hotmod").help("patch hotmod").flag();
+  program.add_argument("-W", "--west81").help("patch west81").flag();
   program.add_argument("-o", "--out").help("output directory").required();
 
   try {
@@ -59,6 +60,8 @@ int main(int argc, char** argv) {
       p.patchValour();
     } else if (program.is_used("--hotmod")) {
       p.patchHotmod();
+    } else if (program.is_used("--west81")) {
+      p.patchWest81();
     } else {
       p.patchVanilla();
     }

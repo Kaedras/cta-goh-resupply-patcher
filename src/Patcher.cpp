@@ -32,29 +32,37 @@ namespace {
                                     pair{"usaf.pak", "properties/ammo_usa.inc"},    pair{"general.pak", "properties/resupply.inc"}};
 
   constexpr array hotmodArchives = {pair{"gamelogic.pak", "properties/resupply_hotmod.inc"}, pair{"gamelogic.pak", "properties/resupply_vanilla.inc"}};
+  constexpr array west81Archives = {pair{"engine.pak", "properties/resupply_hotmod.inc"}};
 } // namespace
 
 Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
   m_outputPath(std::move(outputDir)),
-  m_gamePath(getGamePath()) {}
+  m_gamePath(getGamePath()), m_workshopPath(m_gamePath /  "../../workshop/content/400750") {}
 
 void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
 void Patcher::patchValour() const noexcept(false) {
-  fs::path dataPath = m_gamePath / "../../workshop/content/400750/2537987794/resource";
-
-  for (const auto& [archive, file] : valourArchives) {
-    patchFile(dataPath / archive, file);
-  }
+  patchMod(valourArchives, "2537987794");
 }
 
 void Patcher::patchHotmod() const noexcept(false) {
-  fs::path dataPath = m_gamePath / "../../workshop/content/400750/2614199156/resource";
+  patchMod(hotmodArchives, "2614199156");
+}
 
-  for (const auto& [archive, file] : hotmodArchives) {
-    patchFile(dataPath / archive, file);
+void Patcher::patchWest81() const noexcept(false) {
+  patchMod(west81Archives, "2897299509");
+}
+
+template <size_t T>
+void Patcher::patchMod(const std::array<std::pair<const char*,const char*>, T>& archives, const char* workshopID) const {
+  fs::path path = m_workshopPath / workshopID / "resource";
+
+  for (const auto& [archive, file] : archives) {
+    vector<char> data = loadFromArchive(path / archive, file);
+    patch(data);
+    saveToFile(data, m_outputPath / file);
   }
 }
 
