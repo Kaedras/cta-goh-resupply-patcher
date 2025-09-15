@@ -42,17 +42,6 @@ void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
-template <size_t T>
-void Patcher::patchMod(Mod<T> mod) const {
-  fs::path path = m_workshopPath / mod.workshopID / "resource";
-
-  for (const auto& [archive, file] : mod.archives) {
-    vector<char> data = loadFromArchive(path / archive, file);
-    patch(data);
-    saveToFile(data, m_outputPath / file);
-  }
-}
-
 std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::info("loading from archive: {}", archiveFile.string());

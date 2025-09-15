@@ -21,7 +21,15 @@ public:
   void patchVanilla() const noexcept(false);
 
   template <size_t T>
-  void patchMod(Mod<T> mod) const noexcept(false);
+  void patchMod(Mod<T> mod) const noexcept(false) {
+    std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
+
+    for (const auto& [archive, file] : mod.archives) {
+      std::vector<char> data = loadFromArchive(path / archive, file);
+      patch(data);
+      saveToFile(data, m_outputPath / file);
+    }
+  }
 
 private:
   static constexpr size_t bufferSize = 1024 * 1024;
