@@ -14,6 +14,8 @@ public:
 };
 
 namespace mods {
-  static constexpr ModWest81 west81{std::array
-      {Archive{"engine.pak", "properties/resupply_hotmod.inc"}}};
+  static constexpr ModWest81 west81{
+    std::array
+    {Archive{"engine.pak", "properties/resupply_hotmod.inc"}}
+  };
 }

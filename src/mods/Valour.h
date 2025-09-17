@@ -15,12 +15,15 @@ public:
 
 namespace mods {
   static constexpr ModValour valour{
-      std::array{
-          Archive{"britain.pak", "properties/ammo_eng.inc"}, Archive{"fra.pak", "properties/ammo_fra.inc"},
-          Archive{"hun.pak", "properties/ammo_hun.inc"},
-          Archive{"ita.pak", "properties/ammo_ita.inc"}, Archive{"jap.pak", "properties/ammo_jap.inc"},
-          Archive{"pol.pak", "properties/ammo_pol.inc"},
-          Archive{"usaf.pak", "properties/ammo_usa.inc"}, Archive{"general.pak", "properties/resupply.inc"}
-      }
+    std::array{
+      Archive{"britain.pak", "properties/ammo_eng.inc"},
+      Archive{"fra.pak", "properties/ammo_fra.inc"},
+      Archive{"hun.pak", "properties/ammo_hun.inc"},
+      Archive{"ita.pak", "properties/ammo_ita.inc"},
+      Archive{"jap.pak", "properties/ammo_jap.inc"},
+      Archive{"pol.pak", "properties/ammo_pol.inc"},
+      Archive{"usaf.pak", "properties/ammo_usa.inc"},
+      Archive{"general.pak", "properties/resupply.inc"}
+    }
   };
 }

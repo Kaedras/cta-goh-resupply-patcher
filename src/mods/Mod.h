@@ -9,7 +9,7 @@ struct Archive {
     file(file) {}
 
   const char* const archive; //! archive file name
-  const char* const file; //! file inside the archive
+  const char* const file;    //! file inside the archive
 };
 
 /**

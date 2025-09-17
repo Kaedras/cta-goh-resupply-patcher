@@ -29,14 +29,14 @@ int main(int argc, char** argv) {
   argparse::ArgumentParser program("resupply_patcher", "1.0", argparse::default_arguments::help);
 
   program.add_argument("-v", "--verbose")
-      .action([&](const auto&) {
-        verbosity++;
-      })
-      .append()
-      .flag()
-      .nargs(0)
-      .help("increase output verbosity")
-      .flag();
+         .action([&](const auto&) {
+           verbosity++;
+         })
+         .append()
+         .flag()
+         .nargs(0)
+         .help("increase output verbosity")
+         .flag();
 
   program.add_argument("-V", "--valour").help("patch valour").flag();
   program.add_argument("-H", "--hotmod").help("patch hotmod").flag();
@@ -54,7 +54,7 @@ int main(int argc, char** argv) {
   spdlog::set_level(verbosityToLogLevel(verbosity));
 
   fs::path outDir = program.get<string>("out");
-  Patcher  p(outDir);
+  Patcher p(outDir);
 
   try {
     if (program.is_used("--valour")) {

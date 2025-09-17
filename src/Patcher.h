@@ -4,7 +4,6 @@
 #include <regex>
 #include <string>
 #include <vector>
-
 #include "mods/Mod.h"
 
 class Patcher {
@@ -90,7 +89,7 @@ private:
   struct data_t {
     size_t offset;
     size_t size;
-    int    value;
+    int value;
   };
 
   /**

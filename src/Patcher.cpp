@@ -5,16 +5,15 @@
 #include <fstream>
 #include <iostream>
 #include <regex>
+#include <spdlog/spdlog.h>
 #include <stdexcept>
 #include <utility>
-
-#include <spdlog/spdlog.h>
 #include <vdf_parser.hpp>
 #include <zip.h>
-
+#include "Item.h"
+#include "Mods.h"
 #include "Settings.h"
 #include "Timer.h"
-#include "Mods.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -30,9 +29,7 @@ namespace {
 
 } // namespace
 
-Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
-  m_outputPath(std::move(outputDir)),
-  m_gamePath(getGamePath()), m_workshopPath(m_gamePath /  "../../workshop/content/400750") {}
+Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) : m_outputPath(std::move(outputDir)), m_gamePath(getGamePath()), m_workshopPath(m_gamePath / "../../workshop/content/400750") {}
 
 void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
@@ -46,7 +43,7 @@ std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveF
   }
 
   // Open the archive
-  int  err;
+  int err;
   zip* z = zip_open(archiveFile.c_str(), ZIP_RDONLY, &err);
   if (z == nullptr) {
     zip_error_t error;
@@ -68,7 +65,7 @@ std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveF
 
   // Read the compressed file
   vector<char> result(bufferSize);
-  zip_int64_t  bytesRead = zip_fread(f, result.data(), bufferSize);
+  zip_int64_t bytesRead = zip_fread(f, result.data(), bufferSize);
   if (bytesRead == -1) {
     const auto e = zip_get_error(z);
     throw runtime_error("zip_fread() failed, "s + zip_error_strerror(e));
@@ -95,7 +92,7 @@ std::vector<char> Patcher::loadFromFile(const std::filesystem::path& file) noexc
   in.exceptions(ios::failbit | ios::badbit);
   spdlog::trace("file opened");
 
-  size_t       size = filesystem::file_size(file);
+  size_t size = filesystem::file_size(file);
   vector<char> data(size);
 
   in.read(data.data(), size);
@@ -108,7 +105,7 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::info("patching");
   istringstream iss(data.data());
-  vector<char>  out;
+  vector<char> out;
   out.reserve(data.size());
 
   string line;
@@ -169,7 +166,7 @@ void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::p
 }
 
 std::filesystem::path Patcher::getGamePath() noexcept(false) {
-  Timer    t(__FUNCTION__);
+  Timer t(__FUNCTION__);
   fs::path steamPath = getSteamPath();
 
   ifstream libraryFoldersFile(steamPath / "steamapps/libraryfolders.vdf");
@@ -200,7 +197,7 @@ std::filesystem::path Patcher::getGamePath() noexcept(false) {
 std::filesystem::path Patcher::getSteamPath() noexcept(false) {
   Timer t(__FUNCTION__);
 
-  fs::path               home  = getenv("HOME");
+  fs::path home = getenv("HOME");
   static constexpr array paths = {".local/share/Steam", ".steam/steam", ".var/app/com.valvesoftware.Steam/.local/share/Steam"};
 
   for (const auto& path : paths) {
@@ -251,8 +248,8 @@ void Patcher::replaceNumberInString(std::string& line, int newValue) noexcept(fa
 
 void Patcher::ltrim(std::string& line) noexcept {
   line.erase(line.begin(), ranges::find_if(line, [](char c) {
-               return !isspace(c);
-             }));
+    return !isspace(c);
+  }));
 }
 
 void Patcher::rtrim(std::string& line) noexcept {
@@ -260,6 +257,6 @@ void Patcher::rtrim(std::string& line) noexcept {
                      [](char c) {
                        return !isspace(c);
                      })
-                 .base(),
+             .base(),
              line.end());
 }
