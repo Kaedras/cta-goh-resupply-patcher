@@ -28,10 +28,6 @@ namespace {
   const regex limit(R"(\{limit\s*\d+)");
   const regex limitSpecial(R"(\{limit\s*%supply)");
 
-  constexpr array valourArchives = {pair{"britain.pak", "properties/ammo_eng.inc"}, pair{"fra.pak", "properties/ammo_fra.inc"},    pair{"hun.pak", "properties/ammo_hun.inc"},
-                                    pair{"ita.pak", "properties/ammo_ita.inc"},     pair{"jap.pak", "properties/ammo_jap.inc"},    pair{"pol.pak", "properties/ammo_pol.inc"},
-                                    pair{"usaf.pak", "properties/ammo_usa.inc"},    pair{"general.pak", "properties/resupply.inc"}};
-
 } // namespace
 
 Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) :
