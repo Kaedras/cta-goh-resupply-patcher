@@ -62,6 +62,8 @@ int main(int argc, char** argv) {
     } else if (program.is_used("--hotmod")) {
       p.patchMod(mods::hotmod);
     } else if (program.is_used("--west81")) {
+      // hotmod 1968 is a dependency of west 81, so it has to be patched as well
+      p.patchMod(mods::hotmod);
       p.patchMod(mods::west81);
     } else {
       p.patchVanilla();
