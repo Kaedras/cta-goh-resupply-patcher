@@ -9,8 +9,7 @@
 template <std::size_t T>
 class ModHotmod : public Mod<T> {
 public:
-  constexpr explicit ModHotmod(std::array<Archive, T> archives) :
-    Mod<T>(archives, "2614199156") {}
+  constexpr explicit ModHotmod(std::array<Archive, T> archives) : Mod<T>(archives, "2614199156") {}
 };
 
 namespace mods {
