@@ -49,6 +49,7 @@ file(DOWNLOAD
 
 add_executable(resupply_patcher
         src/main.cpp
+        src/Item.h
         src/Patcher.cpp
         src/Patcher.h
         src/Timer.cpp
