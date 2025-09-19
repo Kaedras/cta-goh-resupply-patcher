@@ -37,7 +37,7 @@ void Patcher::patchVanilla() const noexcept(false) {
 
 std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) noexcept(false) {
   Timer t(__FUNCTION__);
-  spdlog::info("loading from archive: {}", archiveFile.string());
+  spdlog::trace("loading from archive: {}", archiveFile.string());
   if (!filesystem::exists(archiveFile)) {
     throw runtime_error("File not found");
   }
@@ -103,7 +103,7 @@ std::vector<char> Patcher::loadFromFile(const std::filesystem::path& file) noexc
 
 void Patcher::patch(std::vector<char>& data) noexcept(false) {
   Timer t(__FUNCTION__);
-  spdlog::info("patching");
+  spdlog::trace("patching");
   istringstream iss(data.data());
   vector<char> out;
   out.reserve(data.size());
@@ -158,7 +158,7 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::fil
 
 void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__);
-  spdlog::info("saving to file: {}", file.string());
+  spdlog::trace("saving to file: {}", file.string());
   fs::create_directories(file.parent_path());
   ofstream out(file);
   out.exceptions(ios::failbit | ios::badbit);
