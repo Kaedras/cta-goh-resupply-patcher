@@ -153,16 +153,58 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
 void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) const noexcept(false) {
   vector<char> data = loadFromArchive(archiveFile, fileToExtract);
   patch(data);
-  saveToFile(data, m_outputPath / fileToExtract);
+
+  fs::path targetFile = m_outputPath / fileToExtract;
+
+  if (isExistingFileIdentical(data, targetFile)) {
+    spdlog::trace("not saving to file {} because contents are identical", targetFile.string());
+  } else {
+    saveToFile(data, targetFile);
+  }
 }
 
 void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::trace("saving to file: {}", file.string());
+  cout << "\033[33m" << "contents of " << file.string() << " have changed \033[0m\n";
   fs::create_directories(file.parent_path());
   ofstream out(file);
   out.exceptions(ios::failbit | ios::badbit);
   out.write(data.data(), data.size());
+}
+
+bool Patcher::isExistingFileIdentical(const std::vector<char>& data, const std::filesystem::path& file) noexcept {
+  Timer t(__FUNCTION__);
+  spdlog::trace("comparing data to existing file {}", file.string());
+
+  // check if file exists
+  if (!fs::exists(file)) {
+    spdlog::trace("no existing file");
+    return false;
+  }
+
+  // check if file sizes are identical
+  size_t existingSize = fs::file_size(file);
+  if (existingSize != data.size()) {
+    spdlog::trace("file size does not match");
+    return false;
+  }
+
+  try {
+    // read file and compare contents
+    ifstream in(file);
+    in.exceptions(ios::failbit | ios::badbit);
+    vector<char> existingData;
+    existingData.reserve(fs::file_size(file));
+    in.read(existingData.data(), existingSize);
+
+    bool result = memcmp(data.data(), existingData.data(), data.size()) == 0;
+    spdlog::trace("files are{}identical", result ? " not " : " ");
+    return result;
+  } catch (...) {
+    spdlog::trace("exception while reading, assuming files are different");
+    return false;
+  }
 }
 
 std::filesystem::path Patcher::getGamePath() noexcept(false) {

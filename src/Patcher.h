@@ -64,6 +64,11 @@ private:
   static void saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false);
 
   /**
+   * @brief Check whether a vector and the contents of a file are identical
+   */
+  static bool isExistingFileIdentical(const std::vector<char>& data, const std::filesystem::path& file) noexcept;
+
+  /**
    * @brief Get the game path
    * @throw std::runtime_error
    */
