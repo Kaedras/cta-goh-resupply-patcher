@@ -166,7 +166,7 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::fil
 void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::trace("saving to file: {}", file.string());
-  cout << "\033[33m" << "contents of " << file.string() << " have changed \033[0m\n";
+  cout << "\033[33m" << "contents of " << file.string() << " have changed\033[0m\n";
   fs::create_directories(file.parent_path());
   ofstream out(file);
   out.exceptions(ios::failbit | ios::badbit);
