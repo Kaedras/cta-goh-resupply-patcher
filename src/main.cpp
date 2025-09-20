@@ -38,9 +38,11 @@ int main(int argc, char** argv) {
          .help("increase output verbosity")
          .flag();
 
-  program.add_argument("-V", "--valour").help("patch valour").flag();
-  program.add_argument("-H", "--hotmod").help("patch hotmod").flag();
-  program.add_argument("-W", "--west81").help("patch west81").flag();
+  auto &modGroup = program.add_mutually_exclusive_group();
+  modGroup.add_argument("-V", "--valour").help("patch valour").flag();
+  modGroup.add_argument("-H", "--hotmod").help("patch hotmod").flag();
+  modGroup.add_argument("-W", "--west81").help("patch west81").flag();
+
   program.add_argument("out").help("output directory").required();
 
   try {
