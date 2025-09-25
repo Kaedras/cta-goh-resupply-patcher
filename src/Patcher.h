@@ -24,9 +24,7 @@ public:
     std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
 
     for (const auto& [archive, file] : mod.archives) {
-      std::vector<char> data = loadFromArchive(path / archive, file);
-      patch(data);
-      saveToFile(data, m_outputPath / file);
+      patchFile(path / archive, file);
     }
   }
 
