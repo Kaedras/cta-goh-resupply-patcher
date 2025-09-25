@@ -62,9 +62,11 @@ int main(int argc, char** argv) {
     if (program.is_used("--valour")) {
       p.patchMod(mods::valour);
     } else if (program.is_used("--hotmod")) {
+      p.patchVanilla(); // hotmod 1968 does not overwrite the original "resupply.inc"
       p.patchMod(mods::hotmod);
     } else if (program.is_used("--west81")) {
       // hotmod 1968 is a dependency of west 81, so it has to be patched as well
+      p.patchVanilla();
       p.patchMod(mods::hotmod);
       p.patchMod(mods::west81);
     } else {
