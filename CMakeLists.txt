@@ -47,6 +47,8 @@ file(DOWNLOAD
         EXPECTED_HASH SHA512=f2d85be10941c0b5da74c10a19b1f74f068188a246b2cb34f5af31c84d45f29bb0a22a0ffe36fa9c8310a101d1be6a94a263882c7534c93e483e42bef802d657
 )
 
+find_package(OpenSSL CONFIG REQUIRED)
+
 add_executable(resupply_patcher
         src/main.cpp
         src/Item.h
@@ -61,5 +63,5 @@ add_executable(resupply_patcher
 )
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
-target_link_libraries(resupply_patcher argparse spdlog::spdlog zip)
+target_link_libraries(resupply_patcher argparse spdlog::spdlog zip OpenSSL::SSL OpenSSL::Crypto)
 target_include_directories(resupply_patcher PRIVATE ${CMAKE_BINARY_DIR}/deps)

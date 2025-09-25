@@ -3,8 +3,12 @@
 #include <filesystem>
 #include <regex>
 #include <string>
+#include <unordered_map>
 #include <vector>
+#include <openssl/sha.h>
 #include "mods/Mod.h"
+
+using sha256sum = std::array<char, SHA256_DIGEST_LENGTH>;
 
 class Patcher {
 public:
@@ -12,6 +16,8 @@ public:
    * @throw std::runtime_error When the game directory cannot be found
    */
   explicit Patcher(std::filesystem::path outputDir) noexcept(false);
+
+  ~Patcher() noexcept;
 
   /**
    * @brief Patch vanilla resupply values
@@ -60,11 +66,6 @@ private:
    * @throw std::runtime_error
    */
   static void saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false);
-
-  /**
-   * @brief Check whether a vector and the contents of a file are identical
-   */
-  static bool isExistingFileIdentical(const std::vector<char>& data, const std::filesystem::path& file) noexcept;
 
   /**
    * @brief Get the game path
@@ -118,10 +119,14 @@ private:
    */
   static void replaceNumberInString(std::string& line, int newValue) noexcept(false);
 
+  static sha256sum sha256(const std::filesystem::path& file) noexcept(false);
+
   static void ltrim(std::string& line) noexcept;
   static void rtrim(std::string& line) noexcept;
 
   std::filesystem::path m_outputPath;
   std::filesystem::path m_gamePath;
   std::filesystem::path m_workshopPath;
+
+  std::unordered_map<std::filesystem::path, sha256sum> m_outputChecksums;
 };

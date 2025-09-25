@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <openssl/evp.h>
+#include <openssl/sha.h>
 #include <regex>
 #include <spdlog/spdlog.h>
 #include <stdexcept>
@@ -27,9 +29,56 @@ namespace {
   const regex limit(R"(\{limit\s*\d+)");
   const regex limitSpecial(R"(\{limit\s*%supply)");
 
+  struct MdCtxDeleter
+  {
+    void operator()(EVP_MD_CTX* m) const
+    {
+      if (m) {
+        EVP_MD_CTX_free(m);
+      }
+    }
+  };
+  using MdCtxPtr = std::unique_ptr<EVP_MD_CTX, MdCtxDeleter>;
+
+  struct DigestDeleter
+  {
+    void operator()(unsigned char* d) const
+    {
+      if (d) {
+        OPENSSL_free(d);
+      }
+    }
+  };
+  using DigestPtr = std::unique_ptr<unsigned char, DigestDeleter>;
+
 } // namespace
 
-Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) : m_outputPath(std::move(outputDir)), m_gamePath(getGamePath()), m_workshopPath(m_gamePath / "../../workshop/content/400750") {}
+Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) : m_outputPath(std::move(outputDir)), m_gamePath(getGamePath()), m_workshopPath(m_gamePath / "../../workshop/content/400750") {
+  if (exists(m_outputPath)) {
+    for (const auto& entry : fs::recursive_directory_iterator(m_outputPath)) {
+      if (entry.is_directory()) {
+        continue;
+      }
+      m_outputChecksums[fs::relative(entry.path(), m_outputPath)] = sha256(entry.path());
+    }
+  }
+}
+
+Patcher::~Patcher() noexcept {
+  for (const auto& entry : fs::recursive_directory_iterator(m_outputPath)) {
+    if (entry.is_directory()) {
+      continue;
+    }
+    fs::path relativePath = fs::relative(entry.path(), m_outputPath);
+    try {
+      if (m_outputChecksums[relativePath] != sha256(entry.path())) {
+        cout << "\033[33m" << "contents of " << entry.path().string() << " have changed\033[0m\n";
+      }
+    } catch (const runtime_error& e) {
+      spdlog::warn("Error checking for changes in file {}: {}", entry.path().string(), e.what());
+    }
+  }
+}
 
 void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
@@ -156,55 +205,17 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::fil
 
   fs::path targetFile = m_outputPath / fileToExtract;
 
-  if (isExistingFileIdentical(data, targetFile)) {
-    spdlog::trace("not saving to file {} because contents are identical", targetFile.string());
-  } else {
-    saveToFile(data, targetFile);
-  }
+  saveToFile(data, targetFile);
 }
 
 void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::trace("saving to file: {}", file.string());
-  cout << "\033[33m" << "contents of " << file.string() << " have changed\033[0m\n";
   fs::create_directories(file.parent_path());
   ofstream out(file);
   out.exceptions(ios::failbit | ios::badbit);
   out.write(data.data(), data.size());
-}
-
-bool Patcher::isExistingFileIdentical(const std::vector<char>& data, const std::filesystem::path& file) noexcept {
-  Timer t(__FUNCTION__);
-  spdlog::trace("comparing data to existing file {}", file.string());
-
-  // check if file exists
-  if (!fs::exists(file)) {
-    spdlog::trace("no existing file");
-    return false;
-  }
-
-  // check if file sizes are identical
-  size_t existingSize = fs::file_size(file);
-  if (existingSize != data.size()) {
-    spdlog::trace("file size does not match");
-    return false;
-  }
-
-  try {
-    // read file and compare contents
-    ifstream in(file);
-    in.exceptions(ios::failbit | ios::badbit);
-    vector<char> existingData;
-    existingData.reserve(fs::file_size(file));
-    in.read(existingData.data(), existingSize);
-
-    bool identical = memcmp(data.data(), existingData.data(), data.size()) == 0;
-    spdlog::trace("files are{}identical", identical ? " " : " not ");
-    return identical;
-  } catch (...) {
-    spdlog::trace("exception while reading, assuming files are different");
-    return false;
-  }
+  out.close();
 }
 
 std::filesystem::path Patcher::getGamePath() noexcept(false) {
@@ -286,6 +297,56 @@ void Patcher::replaceNumberInString(std::string& line, int newValue) noexcept(fa
   line.replace(offset, size, to_string(newValue));
 
   spdlog::trace("replaced number {} with {}", number, newValue);
+}
+
+sha256sum Patcher::sha256(const std::filesystem::path& file) noexcept(false) {
+  Timer t(__FUNCTION__ + " "s + file.string());
+
+  // check if file exists
+  if (!fs::exists(file)) {
+    throw runtime_error("file does not exist");
+  }
+
+  ifstream input(file, ios::binary);
+
+  MdCtxPtr mdctx(EVP_MD_CTX_new());
+  unsigned int digestLength;
+
+  if (mdctx == nullptr) {
+    throw runtime_error("EVP_MD_CTX_new error");
+  }
+
+  // initialize
+  if (1 != EVP_DigestInit_ex(mdctx.get(), EVP_sha256(), nullptr)) {
+    throw runtime_error("EVP_DigestInit_ex error");
+  }
+
+  constexpr size_t buffer_size{1 << 12};
+  vector buffer(buffer_size, '\0');
+
+  while (input.good()) {
+    input.read(buffer.data(), buffer_size);
+    if (1 != EVP_DigestUpdate(mdctx.get(), buffer.data(), input.gcount())) {
+      throw runtime_error("EVP_DigestUpdate error");
+    }
+  }
+
+  // allocate memory
+  DigestPtr digest(static_cast<unsigned char*>(OPENSSL_malloc(EVP_MD_size(EVP_sha256()))));
+
+  if (digest == nullptr) {
+    throw runtime_error("OPENSSL_malloc error");
+  }
+
+  // finalize data
+  if (1 != EVP_DigestFinal_ex(mdctx.get(), digest.get(), &digestLength)) {
+    throw runtime_error("EVP_DigestFinal_ex error");
+  }
+
+  sha256sum checksum;
+  memcpy(checksum.data(), digest.get(), digestLength);
+
+  return checksum;
 }
 
 void Patcher::ltrim(std::string& line) noexcept {
