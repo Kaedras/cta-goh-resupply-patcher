@@ -198,9 +198,9 @@ bool Patcher::isExistingFileIdentical(const std::vector<char>& data, const std::
     existingData.reserve(fs::file_size(file));
     in.read(existingData.data(), existingSize);
 
-    bool result = memcmp(data.data(), existingData.data(), data.size()) == 0;
-    spdlog::trace("files are{}identical", result ? " not " : " ");
-    return result;
+    bool identical = memcmp(data.data(), existingData.data(), data.size()) == 0;
+    spdlog::trace("files are{}identical", identical ? " " : " not ");
+    return identical;
   } catch (...) {
     spdlog::trace("exception while reading, assuming files are different");
     return false;
