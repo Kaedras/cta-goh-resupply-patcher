@@ -42,6 +42,7 @@ int main(int argc, char** argv) {
   modGroup.add_argument("-V", "--valour").help("patch valour").flag();
   modGroup.add_argument("-H", "--hotmod").help("patch hotmod").flag();
   modGroup.add_argument("-W", "--west81").help("patch west81").flag();
+  modGroup.add_argument("-M", "--mace").help("patch mace").flag();
 
   program.add_argument("out").help("output directory").required();
 
@@ -69,6 +70,8 @@ int main(int argc, char** argv) {
       p.patchVanilla();
       p.patchMod(mods::hotmod);
       p.patchMod(mods::west81);
+    } else if (program.is_used("--mace"))  {
+      p.patchMod(mods::mace);
     } else {
       p.patchVanilla();
     }
