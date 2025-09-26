@@ -12,13 +12,20 @@ public:
   std::vector<std::string> strings;
   int unknown = -1;
   int value = -1;
+  std::string condition; // condition before item definition, e.g. '(mod not "mp"'
 
   friend std::ostream& operator<<(std::ostream& out, const Item& i) {
+    if (!i.condition.empty()) {
+      out << "\t" << i.condition << "\r\n\t";
+    }
     out << "\t{item";
     for (const auto& str : i.strings) {
       out << " \"" << str << "\"";
     }
     out << " " << i.unknown << " {value " << i.value << "}}";
+    if (!i.condition.empty()) {
+      out << "\r\n\t)";
+    }
     return out;
   }
 

@@ -62,6 +62,7 @@ int main(int argc, char** argv) {
   try {
     if (program.is_used("--valour")) {
       p.patchMod(mods::valour);
+      p.removeValourResupplyRestrictions();
     } else if (program.is_used("--hotmod")) {
       p.patchVanilla(); // hotmod 1968 does not overwrite the original "resupply.inc"
       p.patchMod(mods::hotmod);

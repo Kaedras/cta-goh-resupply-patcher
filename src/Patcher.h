@@ -34,6 +34,8 @@ public:
     }
   }
 
+  void removeValourResupplyRestrictions() const;
+
 private:
   static constexpr size_t bufferSize = 1024 * 1024;
 
@@ -51,6 +53,14 @@ private:
    * @throw std::runtime_error
    */
   static std::vector<char> loadFromFile(const std::filesystem::path& file) noexcept(false);
+
+  /**
+   * @brief Read a text file and store its contents in a string
+   * @param file File to read
+   * @return String containing the file contents
+   * @throw std::runtime_error
+   */
+  static std::string readFileToString(const std::filesystem::path& file) noexcept(false);
 
   /**
    * @brief Patch resupply values of the provided data
@@ -88,6 +98,13 @@ private:
   void patchFile(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) const noexcept(false);
 
   /**
+   * @brief Extract item lists from all files in the provided path and replace them with includes
+   */
+  void generateItemsAll() const;
+
+  void replaceResupply() const;
+
+  /**
    * @brief Data structure representing a number inside a string.
    */
   struct data_t {
@@ -123,6 +140,7 @@ private:
 
   static void ltrim(std::string& line) noexcept;
   static void rtrim(std::string& line) noexcept;
+  static void trim(std::string& line) noexcept;
 
   std::filesystem::path m_outputPath;
   std::filesystem::path m_gamePath;
