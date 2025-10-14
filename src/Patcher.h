@@ -1,14 +1,12 @@
 #pragma once
 
 #include <filesystem>
-#include <regex>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <openssl/sha.h>
 #include "mods/Mod.h"
 
-using sha256sum = std::array<char, SHA256_DIGEST_LENGTH>;
+using sha256sum = std::array<char, 32>;
 
 class Patcher {
 public:
