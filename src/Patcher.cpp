@@ -13,6 +13,7 @@
 #include <utility>
 #include <vdf_parser.hpp>
 #include <zip.h>
+
 #include "Item.h"
 #include "Mods.h"
 #include "Settings.h"
@@ -22,84 +23,85 @@ using namespace std;
 namespace fs = std::filesystem;
 
 namespace {
-  constexpr auto APPID = "400750";
+constexpr auto APPID = "400750";
 
-  namespace re {
-    // patterns for changing resupply values
-    const regex radius(R"(\{radius\s*\d+)");
-    const regex resupplyPeriod(R"(\{resupplyPeriod\s*\d+)");
-    const regex regenerationPeriod(R"(\{regenerationPeriod\s*\d+)");
-    const regex limit(R"(\{limit\s*\d+)");
-    const regex limitSpecial(R"(\{limit\s*%supply)");
+namespace re {
+  // patterns for changing resupply values
+  const regex radius(R"(\{radius\s*\d+)");
+  const regex resupplyPeriod(R"(\{resupplyPeriod\s*\d+)");
+  const regex regenerationPeriod(R"(\{regenerationPeriod\s*\d+)");
+  const regex limit(R"(\{limit\s*\d+)");
+  const regex limitSpecial(R"(\{limit\s*%supply)");
 
-    const regex resupply(R"(\{resupply\r\n([\s\S]+?)\t+\}\r\n)");
+  const regex resupply(R"(\{resupply\r\n([\s\S]+?)\t+\}\r\n)");
 
-    // patterns to use when replacing lines
-    const regex itemsLight(R"(\(define "items_light_\w+\"\r\n([\s\S]+?)\r\n\))");
-    const regex itemsHeavy(R"(\(define "items_heavy_\w+\"\r\n([\s\S]+?)\r\n\))");
-    const regex itemsMedic(R"(\(define "items_medic\w*\"\r\n([\s\S]+?)\r\n\))");
-    const regex itemsEngineer(R"(\(define "items_engineer"\r\n([\s\S]+?)\r\n\))");
-    const regex itemsExplosives(R"(\(define "items_explosives"\r\n([\s\S]+?)\r\n\))");
-    const regex resupplyItemsLight(R"(\("items_light(?!_all)\w{1,8}"\))");
-    const regex resupplyItemsHeavy(R"(\("items_heavy(?!_all)\w{1,8}"\))");
-    const regex resupplyItemsMedic(R"(\("items_medic(?!_all)\w{0,5}"\))");
+  // patterns to use when replacing lines
+  const regex itemsLight(R"(\(define "items_light_\w+\"\r\n([\s\S]+?)\r\n\))");
+  const regex itemsHeavy(R"(\(define "items_heavy_\w+\"\r\n([\s\S]+?)\r\n\))");
+  const regex itemsMedic(R"(\(define "items_medic\w*\"\r\n([\s\S]+?)\r\n\))");
+  const regex itemsEngineer(R"(\(define "items_engineer"\r\n([\s\S]+?)\r\n\))");
+  const regex itemsExplosives(R"(\(define "items_explosives"\r\n([\s\S]+?)\r\n\))");
+  const regex resupplyItemsLight(R"(\("items_light(?!_all)\w{1,8}"\))");
+  const regex resupplyItemsHeavy(R"(\("items_heavy(?!_all)\w{1,8}"\))");
+  const regex resupplyItemsMedic(R"(\("items_medic(?!_all)\w{0,5}"\))");
 
-    // patterns to use when removing lines to prevent excessive amount of empty lines
-    const regex itemsLightRemove(R"(\w*\(define "items_light_\w+\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
-    const regex itemsHeavyRemove(R"(\w*\(define "items_heavy_\w+\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
-    const regex itemsMedicRemove(R"(\w*\(define "items_medic\w*\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
-    const regex itemsEngineerRemove(R"(\w*\(define "items_engineer"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
-    const regex itemsExplosivesRemove(R"(\w*\(define "items_explosives"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
-  } // namespace re
+  // patterns to use when removing lines to prevent excessive amount of empty lines
+  const regex itemsLightRemove(R"(\w*\(define "items_light_\w+\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+  const regex itemsHeavyRemove(R"(\w*\(define "items_heavy_\w+\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+  const regex itemsMedicRemove(R"(\w*\(define "items_medic\w*\"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+  const regex itemsEngineerRemove(R"(\w*\(define "items_engineer"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+  const regex
+      itemsExplosivesRemove(R"(\w*\(define "items_explosives"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+}  // namespace re
 
-  struct itemData_t {
-    const string name;
-    const regex replace;
-    const regex remove;
-    vector<Item> items;
+struct itemData_t {
+  const string name;
+  const regex replace;
+  const regex remove;
+  vector<Item> items;
 
-    itemData_t() = delete;
-    itemData_t(string name, regex replace, regex remove) : name(std::move(name)), replace(std::move(replace)), remove(std::move(remove)) {}
-  };
+  itemData_t() = delete;
+  itemData_t(string name, regex replace, regex remove)
+      : name(std::move(name)), replace(std::move(replace)), remove(std::move(remove)) {}
+};
 
-  struct resupplyData_t {
-    const regex replace;
-    const string replaceWith;
+struct resupplyData_t {
+  const regex replace;
+  const string replaceWith;
 
-    resupplyData_t() = delete;
-    resupplyData_t(regex replace, string replaceWith) : replace(std::move(replace)), replaceWith(std::move(replaceWith)) {}
-  };
+  resupplyData_t() = delete;
+  resupplyData_t(regex replace, string replaceWith)
+      : replace(std::move(replace)), replaceWith(std::move(replaceWith)) {}
+};
 
-  struct replacementData_t {
-    const size_t position;
-    const size_t length;
-    const string replacement;
-  };
+struct replacementData_t {
+  const size_t position;
+  const size_t length;
+  const string replacement;
+};
 
-  struct MdCtxDeleter
-  {
-    void operator()(EVP_MD_CTX* m) const
-    {
-      if (m) {
-        EVP_MD_CTX_free(m);
-      }
+struct MdCtxDeleter {
+  void operator()(EVP_MD_CTX* m) const {
+    if (m) {
+      EVP_MD_CTX_free(m);
     }
-  };
-  using MdCtxPtr = std::unique_ptr<EVP_MD_CTX, MdCtxDeleter>;
+  }
+};
+using MdCtxPtr = std::unique_ptr<EVP_MD_CTX, MdCtxDeleter>;
 
-  struct DigestDeleter
-  {
-    void operator()(unsigned char* d) const
-    {
-      if (d) {
-        OPENSSL_free(d);
-      }
+struct DigestDeleter {
+  void operator()(unsigned char* d) const {
+    if (d) {
+      OPENSSL_free(d);
     }
-  };
-  using DigestPtr = std::unique_ptr<unsigned char, DigestDeleter>;
-} // namespace
+  }
+};
+using DigestPtr = std::unique_ptr<unsigned char, DigestDeleter>;
+}  // namespace
 
-Patcher::Patcher(std::filesystem::path outputDir) noexcept(false) : m_outputPath(std::move(outputDir)), m_gamePath(getGamePath()), m_workshopPath(m_gamePath / "../../workshop/content/400750") {
+Patcher::Patcher(std::filesystem::path outputDir) noexcept(false)
+    : m_outputPath(std::move(outputDir)), m_gamePath(getGamePath()),
+      m_workshopPath(m_gamePath / "../../workshop/content/400750") {
   if (exists(m_outputPath)) {
     for (const auto& entry : fs::recursive_directory_iterator(m_outputPath)) {
       if (entry.is_directory()) {
@@ -134,7 +136,7 @@ void Patcher::patchMod(const Mod& mod) const noexcept(false) {
   std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
 
   for (const auto& [archive, files] : mod.archives) {
-    for (const auto& file: files) {
+    for (const auto& file : files) {
       patchFile(path / archive, file);
     }
   }
@@ -145,7 +147,9 @@ void Patcher::removeResupplyRestrictions(const Mod& mod) const {
   replaceResupply(mod);
 }
 
-std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) noexcept(false) {
+std::vector<char>
+Patcher::loadFromArchive(const std::filesystem::path& archiveFile,
+                         const std::filesystem::path& fileToExtract) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::trace("loading from archive: {}", archiveFile.string());
   if (!filesystem::exists(archiveFile)) {
@@ -228,7 +232,8 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
     }
 
     // using strings instead of regex would be much faster,
-    // but as this function only takes a few milliseconds, the practical benefit of any optimization is negligible
+    // but as this function only takes a few milliseconds, the practical benefit of any optimization
+    // is negligible
     if (regex_search(line, regex(re::radius))) {
       // radius
       spdlog::trace("modifying radius");
@@ -249,7 +254,8 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
       // limit, value is "%supply" instead of an integer
       spdlog::trace("modifying limit %supply");
       static constexpr string stringToReplace = "%supply";
-      line.replace(line.find(stringToReplace), stringToReplace.size(), to_string(Settings::defaults::limitFallback));
+      line.replace(line.find(stringToReplace), stringToReplace.size(),
+                   to_string(Settings::defaults::limitFallback));
     }
 
     // rtrim(line);
@@ -260,7 +266,8 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
   swap(data, out);
 }
 
-void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) const noexcept(false) {
+void Patcher::patchFile(const std::filesystem::path& archiveFile,
+                        const std::filesystem::path& fileToExtract) const noexcept(false) {
   vector<char> data = loadFromArchive(archiveFile, fileToExtract);
   patch(data);
 
@@ -273,11 +280,11 @@ void Patcher::generateItemsAll(const Mod& mod) const {
   Timer t(__FUNCTION__);
 
   array itemData{
-    itemData_t{"items_medic_all", re::itemsMedic, re::itemsMedicRemove},
-    itemData_t{"items_light_all", re::itemsLight, re::itemsLightRemove},
-    itemData_t{"items_heavy_all", re::itemsHeavy, re::itemsHeavyRemove},
-    itemData_t{"items_engineer", re::itemsEngineer, re::itemsEngineerRemove},
-    itemData_t{"items_explosives", re::itemsExplosives, re::itemsExplosivesRemove},
+      itemData_t{ "items_medic_all",      re::itemsMedic,      re::itemsMedicRemove},
+      itemData_t{ "items_light_all",      re::itemsLight,      re::itemsLightRemove},
+      itemData_t{ "items_heavy_all",      re::itemsHeavy,      re::itemsHeavyRemove},
+      itemData_t{  "items_engineer",   re::itemsEngineer,   re::itemsEngineerRemove},
+      itemData_t{"items_explosives", re::itemsExplosives, re::itemsExplosivesRemove},
   };
 
   for (const auto& archive : mod.archives) {
@@ -286,7 +293,7 @@ void Patcher::generateItemsAll(const Mod& mod) const {
     // extract item data
     for (auto& entry : itemData) {
       auto begin = sregex_iterator(content.begin(), content.end(), entry.replace);
-      auto end = sregex_iterator();
+      auto end   = sregex_iterator();
 
       for (sregex_iterator i = begin; i != end; ++i) {
         string res = i->str(1);
@@ -356,7 +363,8 @@ void Patcher::generateItemsAll(const Mod& mod) const {
 
     for (const auto& entry : itemData) {
       // replace first instance
-      content = regex_replace(content, entry.replace, "(include \"" + entry.name + ".inc\")", regex_constants::format_first_only);
+      content = regex_replace(content, entry.replace, "(include \"" + entry.name + ".inc\")",
+                              regex_constants::format_first_only);
       // remove all others
       content = regex_replace(content, entry.remove, "");
     }
@@ -376,19 +384,19 @@ void Patcher::replaceResupply(const Mod& mod) const {
   Timer t(__FUNCTION__);
 
   const array resupplies{
-    resupplyData_t{re::resupplyItemsLight,"(\"items_light_all\")"},
-    resupplyData_t{re::resupplyItemsHeavy,"(\"items_heavy_all\")"},
-    resupplyData_t{re::resupplyItemsMedic,"(\"items_medic_all\")"}
+      resupplyData_t{re::resupplyItemsLight, "(\"items_light_all\")"},
+      resupplyData_t{re::resupplyItemsHeavy, "(\"items_heavy_all\")"},
+      resupplyData_t{re::resupplyItemsMedic, "(\"items_medic_all\")"}
   };
 
   for (const auto& archive : mod.archives) {
-    fs::path file = m_outputPath / archive.files.front();
+    fs::path file      = m_outputPath / archive.files.front();
     string fileContent = readFileToString(file);
 
     vector<replacementData_t> replacements;
 
     auto begin = sregex_iterator(fileContent.begin(), fileContent.end(), re::resupply);
-    auto end = sregex_iterator();
+    auto end   = sregex_iterator();
 
     for (sregex_iterator i = begin; i != end; ++i) {
       string result = i->str(1);
@@ -400,7 +408,8 @@ void Patcher::replaceResupply(const Mod& mod) const {
       }
 
       // save replacement data
-      replacements.push_back({static_cast<size_t>(i->position(1)), static_cast<size_t>(i->length(1)), result});
+      replacements.push_back(
+          {static_cast<size_t>(i->position(1)), static_cast<size_t>(i->length(1)), result});
     }
 
     // replace strings from end to beginning to not invalidate the stored offsets
@@ -411,7 +420,7 @@ void Patcher::replaceResupply(const Mod& mod) const {
     // clean up empty lines
     replacements.clear();
     begin = sregex_iterator(fileContent.begin(), fileContent.end(), re::resupply);
-    end = sregex_iterator();
+    end   = sregex_iterator();
 
     for (sregex_iterator i = begin; i != end; ++i) {
       string result = i->str(1);
@@ -430,7 +439,8 @@ void Patcher::replaceResupply(const Mod& mod) const {
           replacement.append(line + "\r\n");
         }
       }
-      replacements.push_back({static_cast<size_t>(i->position(1)), static_cast<size_t>(i->length(1)), replacement});
+      replacements.push_back(
+          {static_cast<size_t>(i->position(1)), static_cast<size_t>(i->length(1)), replacement});
     }
 
     // replace strings from end to beginning to not invalidate the stored offsets
@@ -448,7 +458,8 @@ std::string Patcher::readFileToString(const std::filesystem::path& file) noexcep
   return {data.begin(), data.end()};
 }
 
-void Patcher::saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false) {
+void Patcher::saveToFile(const std::vector<char>& data,
+                         const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__);
   spdlog::trace("saving to file: {}", file.string());
 
@@ -477,7 +488,8 @@ std::filesystem::path Patcher::getGamePath() noexcept(false) {
     // iterate over keys in apps
     for (const auto& appID : library->childs["apps"]->attribs | views::keys) {
       if (appID == APPID) {
-        fs::path gamePath = fs::path(library->attribs["path"]) / "steamapps/common/Call to Arms - Gates of Hell";
+        fs::path gamePath =
+            fs::path(library->attribs["path"]) / "steamapps/common/Call to Arms - Gates of Hell";
         spdlog::trace("found game in {}", gamePath.string());
         return gamePath;
       }
@@ -490,8 +502,9 @@ std::filesystem::path Patcher::getGamePath() noexcept(false) {
 std::filesystem::path Patcher::getSteamPath() noexcept(false) {
   Timer t(__FUNCTION__);
 
-  fs::path home = getenv("HOME");
-  static constexpr array paths = {".local/share/Steam", ".steam/steam", ".var/app/com.valvesoftware.Steam/.local/share/Steam"};
+  fs::path home                = getenv("HOME");
+  static constexpr array paths = {".local/share/Steam", ".steam/steam",
+                                  ".var/app/com.valvesoftware.Steam/.local/share/Steam"};
 
   for (const auto& path : paths) {
     fs::path p = home / path;
@@ -591,8 +604,8 @@ sha256sum Patcher::sha256(const std::filesystem::path& file) noexcept(false) {
 
 void Patcher::ltrim(std::string& line) noexcept {
   line.erase(line.begin(), ranges::find_if(line, [](char c) {
-    return !isspace(c);
-  }));
+               return !isspace(c);
+             }));
 }
 
 void Patcher::rtrim(std::string& line) noexcept {
@@ -600,7 +613,7 @@ void Patcher::rtrim(std::string& line) noexcept {
                      [](char c) {
                        return !isspace(c);
                      })
-             .base(),
+                 .base(),
              line.end());
 }
 

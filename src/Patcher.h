@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+
 #include "mods/Mod.h"
 
 using sha256sum = std::array<char, 32>;
@@ -45,7 +46,9 @@ private:
    * @param fileToExtract File to extract from inside the archive
    * @throw std::runtime_error
    */
-  static std::vector<char> loadFromArchive(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) noexcept(false);
+  static std::vector<char>
+  loadFromArchive(const std::filesystem::path& archiveFile,
+                  const std::filesystem::path& fileToExtract) noexcept(false);
 
   /**
    * @brief Read the specified file
@@ -75,7 +78,8 @@ private:
    * @param file Output file
    * @throw std::runtime_error
    */
-  static void saveToFile(const std::vector<char>& data, const std::filesystem::path& file) noexcept(false);
+  static void saveToFile(const std::vector<char>& data,
+                         const std::filesystem::path& file) noexcept(false);
 
   /**
    * @brief Get the game path
@@ -90,12 +94,14 @@ private:
   static std::filesystem::path getSteamPath() noexcept(false);
 
   /**
-   * @brief Extract a file from an archive, patch the resupply values, and save it in @link m_outputPath @endlink
+   * @brief Extract a file from an archive, patch the resupply values, and save it in
+   * @link m_outputPath @endlink
    * @param archiveFile Archive to extract from
    * @param fileToExtract File to extract from inside the archive
    * @throw std::runtime_error
    */
-  void patchFile(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) const noexcept(false);
+  void patchFile(const std::filesystem::path& archiveFile,
+                 const std::filesystem::path& fileToExtract) const noexcept(false);
 
   /**
    * @brief Extract item lists from all files in the provided path and replace them with includes

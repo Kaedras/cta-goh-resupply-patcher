@@ -1,25 +1,25 @@
+#include <argparse/argparse.hpp>
 #include <filesystem>
 #include <iostream>
 #include <regex>
-#include <argparse/argparse.hpp>
 #include <spdlog/spdlog.h>
 
-#include "Patcher.h"
 #include "Mods.h"
+#include "Patcher.h"
 
 using namespace std;
 namespace fs = std::filesystem;
 
 spdlog::level::level_enum verbosityToLogLevel(int verbosity) {
   switch (verbosity) {
-    case 1:
-      return spdlog::level::info;
-    case 2:
-      return spdlog::level::debug;
-    case 3:
-      return spdlog::level::trace;
-    default:
-      return spdlog::level::err;
+  case 1:
+    return spdlog::level::info;
+  case 2:
+    return spdlog::level::debug;
+  case 3:
+    return spdlog::level::trace;
+  default:
+    return spdlog::level::err;
   }
 }
 
@@ -29,16 +29,16 @@ int main(int argc, char** argv) {
   argparse::ArgumentParser program("resupply_patcher", "1.0", argparse::default_arguments::help);
 
   program.add_argument("-v", "--verbose")
-         .action([&](const auto&) {
-           verbosity++;
-         })
-         .append()
-         .flag()
-         .nargs(0)
-         .help("increase output verbosity")
-         .flag();
+      .action([&](const auto&) {
+        verbosity++;
+      })
+      .append()
+      .flag()
+      .nargs(0)
+      .help("increase output verbosity")
+      .flag();
 
-  auto &modGroup = program.add_mutually_exclusive_group();
+  auto& modGroup = program.add_mutually_exclusive_group();
   modGroup.add_argument("-V", "--valour").help("patch valour").flag();
   modGroup.add_argument("-H", "--hotmod").help("patch hotmod").flag();
   modGroup.add_argument("-W", "--west81").help("patch west81").flag();
@@ -64,11 +64,11 @@ int main(int argc, char** argv) {
       p.patchMod(mods::Valour);
       p.removeResupplyRestrictions(mods::Valour);
     } else if (program.is_used("--hotmod")) {
-      p.patchVanilla(); // hotmod 1968 does not overwrite the original "resupply.inc"
+      p.patchVanilla();  // hotmod 1968 does not overwrite the original "resupply.inc"
       p.patchMod(mods::Hotmod);
     } else if (program.is_used("--west81")) {
       p.patchMod(mods::West81);
-    } else if (program.is_used("--mace"))  {
+    } else if (program.is_used("--mace")) {
       p.patchMod(mods::Mace);
     } else {
       p.patchVanilla();

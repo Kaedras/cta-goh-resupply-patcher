@@ -11,8 +11,8 @@ class Item {
 public:
   std::vector<std::string> strings;
   int unknown = -1;
-  int value = -1;
-  std::string condition; // condition before item definition, e.g. '(mod not "mp"'
+  int value   = -1;
+  std::string condition;  // condition before item definition, e.g. '(mod not "mp"'
 
   friend std::ostream& operator<<(std::ostream& out, const Item& i) {
     if (!i.condition.empty()) {
