@@ -1,11 +1,14 @@
 #include <argparse/argparse.hpp>
+#include <exception>
 #include <filesystem>
 #include <iostream>
-#include <regex>
 #include <spdlog/spdlog.h>
+#include <stdexcept>
+#include <string>
 
 #include "Mods.h"
 #include "Patcher.h"
+#include "spdlog/common.h"
 
 using namespace std;
 namespace fs = std::filesystem;

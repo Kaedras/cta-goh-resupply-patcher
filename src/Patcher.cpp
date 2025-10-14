@@ -1,23 +1,36 @@
 #include "Patcher.h"
 
+#include <algorithm>
+#include <cctype>
+#include <compare>
+#include <cstdlib>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <memory>
+#include <openssl/crypto.h>
 #include <openssl/evp.h>
-#include <openssl/sha.h>
+#include <openssl/types.h>
 #include <ranges>
 #include <regex>
 #include <spdlog/spdlog.h>
+#include <sstream>
 #include <stdexcept>
 #include <utility>
 #include <vdf_parser.hpp>
 #include <zip.h>
+#include <zipconf.h>
 
 #include "Item.h"
-#include "Mods.h"
 #include "Settings.h"
 #include "Timer.h"
+#include "mods/Mod.h"
+#include "spdlog/fmt/bundled/base.h"
+#include "spdlog/fmt/bundled/format.h"
+
+struct zip;
+struct zip_file;
 
 using namespace std;
 namespace fs = std::filesystem;

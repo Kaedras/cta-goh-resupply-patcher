@@ -1,11 +1,13 @@
 #pragma once
 
+#include <array>
+#include <cstddef>
 #include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "mods/Mod.h"
+class Mod;
 
 using sha256sum = std::array<char, 32>;
 
