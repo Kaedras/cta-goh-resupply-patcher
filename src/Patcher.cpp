@@ -140,9 +140,9 @@ void Patcher::patchMod(const Mod& mod) const noexcept(false) {
   }
 }
 
-void Patcher::removeValourResupplyRestrictions() const {
-  generateItemsAll();
-  replaceResupply();
+void Patcher::removeResupplyRestrictions(const Mod& mod) const {
+  generateItemsAll(mod);
+  replaceResupply(mod);
 }
 
 std::vector<char> Patcher::loadFromArchive(const std::filesystem::path& archiveFile, const std::filesystem::path& fileToExtract) noexcept(false) {
@@ -269,7 +269,7 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile, const std::fil
   saveToFile(data, targetFile);
 }
 
-void Patcher::generateItemsAll() const {
+void Patcher::generateItemsAll(const Mod& mod) const {
   Timer t(__FUNCTION__);
 
   array itemData{
@@ -280,7 +280,7 @@ void Patcher::generateItemsAll() const {
     itemData_t{"items_explosives", re::itemsExplosives, re::itemsExplosivesRemove},
   };
 
-  for (const auto& archive : mods::Valour.archives) {
+  for (const auto& archive : mod.archives) {
     string content = readFileToString(m_outputPath / archive.files.front());
 
     // extract item data
@@ -341,7 +341,7 @@ void Patcher::generateItemsAll() const {
   }
 
   // delete items from files
-  for (const auto& archive : mods::Valour.archives) {
+  for (const auto& archive : mod.archives) {
     fs::path file = m_outputPath / archive.files.front();
 
     ifstream in(file);
@@ -372,7 +372,7 @@ void Patcher::generateItemsAll() const {
   }
 }
 
-void Patcher::replaceResupply() const {
+void Patcher::replaceResupply(const Mod& mod) const {
   Timer t(__FUNCTION__);
 
   const array resupplies{
@@ -381,7 +381,7 @@ void Patcher::replaceResupply() const {
     resupplyData_t{re::resupplyItemsMedic,"(\"items_medic_all\")"}
   };
 
-  for (const auto& archive : mods::Valour.archives) {
+  for (const auto& archive : mod.archives) {
     fs::path file = m_outputPath / archive.files.front();
     string fileContent = readFileToString(file);
 

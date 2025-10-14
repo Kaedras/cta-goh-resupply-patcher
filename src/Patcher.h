@@ -25,7 +25,11 @@ public:
 
   void patchMod(const Mod& mod) const noexcept(false);
 
-  void removeValourResupplyRestrictions() const;
+  /**
+   * @brief Remove resupply restrictions for a mod
+   * @note This function has not been tested for mods other than Valour
+   */
+  void removeResupplyRestrictions(const Mod& mod) const;
 
 private:
   static constexpr size_t bufferSize = 1024 * 1024;
@@ -91,9 +95,9 @@ private:
   /**
    * @brief Extract item lists from all files in the provided path and replace them with includes
    */
-  void generateItemsAll() const;
+  void generateItemsAll(const Mod& mod) const;
 
-  void replaceResupply() const;
+  void replaceResupply(const Mod& mod) const;
 
   /**
    * @brief Data structure representing a number inside a string.
