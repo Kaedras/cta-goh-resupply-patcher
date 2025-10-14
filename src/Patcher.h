@@ -23,7 +23,7 @@ public:
    */
   void patchVanilla() const noexcept(false);
 
-  void patchMod(Mod mod) const noexcept(false) {
+  void patchMod(const Mod& mod) const noexcept(false) {
     std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
 
     for (const auto& [archive, files] : mod.archives) {
