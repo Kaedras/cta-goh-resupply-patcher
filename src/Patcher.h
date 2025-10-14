@@ -23,6 +23,11 @@ public:
    */
   void patchVanilla() const noexcept(false);
 
+  /**
+   * @brief Patch resupply values a mod
+   * @param mod Mod to patch
+   * @throw std::runtime_error
+   */
   void patchMod(const Mod& mod) const noexcept(false);
 
   /**
@@ -131,6 +136,9 @@ private:
    */
   static void replaceNumberInString(std::string& line, int newValue) noexcept(false);
 
+  /**
+   * @brief Calculate the SHA256 sum of a file
+   */
   static sha256sum sha256(const std::filesystem::path& file) noexcept(false);
 
   static void ltrim(std::string& line) noexcept;

@@ -37,7 +37,11 @@ public:
   const char* const workshopID;
 };
 
-
+/**
+ * @brief Define a new mod
+ * @param name Mod name
+ * @param id Steam Workshop ID
+ */
 #define MOD(name, id) \
   class Mod##name : public Mod { \
   public: \
@@ -45,6 +49,11 @@ public:
     explicit Mod##name(Archive archive) : Mod(#name, archive, #id) {} \
   };
 
+/**
+ * @brief Define mod archives containing resupply data
+ * @param name Mod name
+ * @param ... Archive list. Can be either archive{} or std::vector<archive>{}
+ */
 #define MOD_ARCHIVES(name, ...) \
   namespace mods { \
     static const Mod##name name{ \
