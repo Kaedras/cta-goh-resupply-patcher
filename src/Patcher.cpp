@@ -270,8 +270,8 @@ void Patcher::generateItemsAll() const {
     itemData_t{"items_explosives", re::itemsExplosives, re::itemsExplosivesRemove},
   };
 
-  for (const auto& archive : mods::valour.archives) {
-    string content = readFileToString(m_outputPath / archive.file);
+  for (const auto& archive : mods::Valour.archives) {
+    string content = readFileToString(m_outputPath / archive.files.front());
 
     // extract item data
     for (auto& entry : itemData) {
@@ -331,8 +331,8 @@ void Patcher::generateItemsAll() const {
   }
 
   // delete items from files
-  for (const auto& archive : mods::valour.archives) {
-    fs::path file = m_outputPath / archive.file;
+  for (const auto& archive : mods::Valour.archives) {
+    fs::path file = m_outputPath / archive.files.front();
 
     ifstream in(file);
     in.exceptions(ios::failbit | ios::badbit);
@@ -371,8 +371,8 @@ void Patcher::replaceResupply() const {
     resupplyData_t{re::resupplyItemsMedic,"(\"items_medic_all\")"}
   };
 
-  for (const auto& archive : mods::valour.archives) {
-    fs::path file = m_outputPath / archive.file;
+  for (const auto& archive : mods::Valour.archives) {
+    fs::path file = m_outputPath / archive.files.front();
     string fileContent = readFileToString(file);
 
     vector<replacementData_t> replacements;

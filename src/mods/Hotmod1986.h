@@ -6,17 +6,5 @@
  * Hotmod 1968
  * https://steamcommunity.com/sharedfiles/filedetails/?id=2614199156
  */
-template <std::size_t T>
-class ModHotmod : public Mod<T> {
-public:
-  constexpr explicit ModHotmod(std::array<Archive, T> archives) : Mod<T>(archives, "2614199156") {}
-};
-
-namespace mods {
-  static constexpr ModHotmod hotmod{
-    std::array{
-      Archive{"gamelogic.pak", "properties/resupply_hotmod.inc"},
-      Archive{"gamelogic.pak", "properties/resupply_vanilla.inc"}
-    }
-  };
-}
+MOD(Hotmod, 2614199156)
+MOD_ARCHIVES(Hotmod, Archive("gamelogic.pak", std::vector{"properties/resupply_hotmod.inc", "properties/resupply_vanilla.inc"}));

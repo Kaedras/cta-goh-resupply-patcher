@@ -25,12 +25,13 @@ public:
    */
   void patchVanilla() const noexcept(false);
 
-  template <size_t T>
-  void patchMod(Mod<T> mod) const noexcept(false) {
+  void patchMod(Mod mod) const noexcept(false) {
     std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
 
-    for (const auto& [archive, file] : mod.archives) {
-      patchFile(path / archive, file);
+    for (const auto& [archive, files] : mod.archives) {
+      for (const auto& file: files) {
+        patchFile(path / archive, file);
+      }
     }
   }
 

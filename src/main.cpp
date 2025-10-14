@@ -61,15 +61,15 @@ int main(int argc, char** argv) {
 
   try {
     if (program.is_used("--valour")) {
-      p.patchMod(mods::valour);
+      p.patchMod(mods::Valour);
       p.removeValourResupplyRestrictions();
     } else if (program.is_used("--hotmod")) {
       p.patchVanilla(); // hotmod 1968 does not overwrite the original "resupply.inc"
-      p.patchMod(mods::hotmod);
+      p.patchMod(mods::Hotmod);
     } else if (program.is_used("--west81")) {
-      p.patchMod(mods::west81);
+      p.patchMod(mods::West81);
     } else if (program.is_used("--mace"))  {
-      p.patchMod(mods::mace);
+      p.patchMod(mods::Mace);
     } else {
       p.patchVanilla();
     }
