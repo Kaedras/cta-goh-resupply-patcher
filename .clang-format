@@ -1,0 +1,23 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 2
+---
+Language: Cpp
+DeriveLineEnding: false
+UseCRLF: false
+DerivePointerAlignment: false
+PointerAlignment: Left
+AlignConsecutiveAssignments: true
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLambdasOnASingleLine: Empty
+BreakTemplateDeclarations: Yes
+AccessModifierOffset: -2
+AlignTrailingComments: true
+SpacesBeforeTrailingComments: 2
+NamespaceIndentation: Inner
+MaxEmptyLinesToKeep: 1
+BreakBeforeBraces: Attach
+ColumnLimit: 100
+AlignArrayOfStructures: Right
+AllowAllArgumentsOnNextLine: true
