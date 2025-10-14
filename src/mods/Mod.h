@@ -37,12 +37,11 @@ public:
   const char* const workshopID;
 };
 
-using Archives = std::vector<Archive>;
 
 #define MOD(name, id) \
   class Mod##name : public Mod { \
   public: \
-    explicit Mod##name(Archives archives) : Mod(#name, archives, #id) {} \
+    explicit Mod##name(std::vector<Archive> archives) : Mod(#name, archives, #id) {} \
     explicit Mod##name(Archive archive) : Mod(#name, archive, #id) {} \
   };
 

@@ -7,7 +7,7 @@
  * https://steamcommunity.com/sharedfiles/filedetails/?id=2537987794
  */
 MOD(Valour, 2537987794)
-MOD_ARCHIVES(Valour, Archives{
+MOD_ARCHIVES(Valour, std::vector<Archive>{
   {"britain.pak", "properties/ammo_eng.inc"},
   {"fra.pak", "properties/ammo_fra.inc"},
   {"hun.pak", "properties/ammo_hun.inc"},
