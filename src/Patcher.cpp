@@ -130,6 +130,16 @@ void Patcher::patchVanilla() const noexcept(false) {
   patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
+void Patcher::patchMod(const Mod& mod) const noexcept(false) {
+  std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
+
+  for (const auto& [archive, files] : mod.archives) {
+    for (const auto& file: files) {
+      patchFile(path / archive, file);
+    }
+  }
+}
+
 void Patcher::removeValourResupplyRestrictions() const {
   generateItemsAll();
   replaceResupply();

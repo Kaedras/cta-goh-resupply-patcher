@@ -23,15 +23,7 @@ public:
    */
   void patchVanilla() const noexcept(false);
 
-  void patchMod(const Mod& mod) const noexcept(false) {
-    std::filesystem::path path = m_workshopPath / mod.workshopID / "resource";
-
-    for (const auto& [archive, files] : mod.archives) {
-      for (const auto& file: files) {
-        patchFile(path / archive, file);
-      }
-    }
-  }
+  void patchMod(const Mod& mod) const noexcept(false);
 
   void removeValourResupplyRestrictions() const;
 
