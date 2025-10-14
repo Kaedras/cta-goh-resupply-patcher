@@ -18,18 +18,21 @@ struct Archive {
 class Mod {
 public:
   /**
+   * @param name Mod name
    * @param archives Files that should be patched.
    * @param workshopID Steam Workshop ID of the mod. Required to automatically detect the mod path.
    */
-  Mod(std::vector<Archive> archives, const char* workshopID) : archives(std::move(archives)), workshopID(workshopID) {}
+  Mod(std::string name, std::vector<Archive> archives, const char* workshopID) : name(std::move(name)), archives(std::move(archives)), workshopID(workshopID) {}
 
   /**
+  * @param name Mod name
   * @param archive File that should be patched.
   * @param workshopID Steam Workshop ID of the mod. Required to automatically detect the mod path.
   */
-  Mod(Archive archive, const char* workshopID) : archives(std::vector{std::move(archive)}), workshopID(workshopID) {}
+  Mod(std::string name, Archive archive, const char* workshopID) : name(std::move(name)), archives(std::vector{std::move(archive)}), workshopID(workshopID) {}
   Mod() = delete;
 
+  const std::string name;
   const std::vector<Archive> archives;
   const char* const workshopID;
 };
@@ -39,8 +42,8 @@ using Archives = std::vector<Archive>;
 #define MOD(name, id) \
   class Mod##name : public Mod { \
   public: \
-    explicit Mod##name(Archives archives) : Mod(archives, #id) {} \
-    explicit Mod##name(Archive archive) : Mod(archive, #id) {} \
+    explicit Mod##name(Archives archives) : Mod(#name, archives, #id) {} \
+    explicit Mod##name(Archive archive) : Mod(#name, archive, #id) {} \
   };
 
 #define MOD_ARCHIVES(name, ...) \
