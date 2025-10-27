@@ -166,7 +166,7 @@ Patcher::loadFromArchive(const std::filesystem::path& archiveFile,
   Timer t(__FUNCTION__);
   spdlog::trace("loading from archive: {}", archiveFile.string());
   if (!filesystem::exists(archiveFile)) {
-    throw runtime_error("File not found");
+    throw runtime_error("File " + archiveFile.string() + " not found");
   }
 
   // Open the archive
@@ -212,7 +212,7 @@ std::vector<char> Patcher::loadFromFile(const std::filesystem::path& file) noexc
   spdlog::debug("loading from file: {}", file.string());
 
   if (!filesystem::exists(file)) {
-    throw runtime_error("File not found");
+    throw runtime_error("File " + file.string() + " not found");
   }
 
   ifstream in(file);
