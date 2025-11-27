@@ -49,8 +49,8 @@ public:
 #define MOD(name, id)                                                                              \
   class Mod##name : public Mod {                                                                   \
   public:                                                                                          \
-    explicit Mod##name(std::vector<Archive> archives) : Mod(#name, archives, #id) {}               \
-    explicit Mod##name(Archive archive) : Mod(#name, archive, #id) {}                              \
+    explicit Mod##name(std::vector<Archive> archives) : Mod(#name, std::move(archives), #id) {}    \
+    explicit Mod##name(Archive archive) : Mod(#name, std::move(archive), #id) {}                   \
   };
 
 /**
