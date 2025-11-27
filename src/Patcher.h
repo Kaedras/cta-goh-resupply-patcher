@@ -106,6 +106,13 @@ private:
                  const std::filesystem::path& fileToExtract) const noexcept(false);
 
   /**
+   * @brief Patch the resupply values of a file and save it in @link m_outputPath @endlink
+   * @param file File to patch
+   * @throw std::runtime_error
+   */
+  void patchFile(const std::filesystem::path& file) const noexcept(false);
+
+  /**
    * @brief Extract item lists from all files in the provided path and replace them with includes
    */
   void generateItemsAll(const Mod& mod) const;

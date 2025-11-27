@@ -153,6 +153,9 @@ void Patcher::patchMod(const Mod& mod) const noexcept(false) {
       patchFile(path / archive, file);
     }
   }
+  for (const auto& file : mod.files) {
+    patchFile(file);
+  }
 }
 
 void Patcher::removeResupplyRestrictions(const Mod& mod) const {
@@ -285,6 +288,15 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile,
   patch(data);
 
   fs::path targetFile = m_outputPath / fileToExtract;
+
+  saveToFile(data, targetFile);
+}
+
+void Patcher::patchFile(const std::filesystem::path& file) const noexcept(false) {
+  vector<char> data = loadFromFile(file);
+  patch(data);
+
+  fs::path targetFile = m_outputPath / file;
 
   saveToFile(data, targetFile);
 }

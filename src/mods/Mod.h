@@ -27,6 +27,9 @@ public:
   Mod(std::string name, std::vector<Archive> archives, const char* workshopID)
       : name(std::move(name)), archives(std::move(archives)), workshopID(workshopID) {}
 
+  Mod(std::string name, std::vector<std::filesystem::path> files, const char* workshopID)
+      : name(std::move(name)), files(std::move(files)), workshopID(workshopID) {}
+
   /**
    * @param name Mod name
    * @param archive File that should be patched.
@@ -34,10 +37,15 @@ public:
    */
   Mod(std::string name, Archive archive, const char* workshopID)
       : name(std::move(name)), archives(std::vector{std::move(archive)}), workshopID(workshopID) {}
+
+  Mod(std::string name, std::filesystem::path file, const char* workshopID)
+      : name(std::move(name)), files(std::vector{std::move(file)}), workshopID(workshopID) {}
+
   Mod() = delete;
 
   const std::string name;
   const std::vector<Archive> archives;
+  const std::vector<std::filesystem::path> files;
   const char* const workshopID;
 };
 
@@ -50,7 +58,10 @@ public:
   class Mod##name : public Mod {                                                                   \
   public:                                                                                          \
     explicit Mod##name(std::vector<Archive> archives) : Mod(#name, std::move(archives), #id) {}    \
+    explicit Mod##name(std::vector<std::filesystem::path> files)                                   \
+        : Mod(#name, std::move(files), #id) {}                                                     \
     explicit Mod##name(Archive archive) : Mod(#name, std::move(archive), #id) {}                   \
+    explicit Mod##name(std::filesystem::path file) : Mod(#name, std::move(file), #id) {}           \
   };
 
 /**
