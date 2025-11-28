@@ -102,15 +102,17 @@ private:
    * @param fileToExtract File to extract from inside the archive
    * @throw std::runtime_error
    */
-  void patchFile(const std::filesystem::path& archiveFile,
-                 const std::filesystem::path& fileToExtract) const noexcept(false);
+  void patchFileFromArchive(const std::filesystem::path& archiveFile,
+                            const std::filesystem::path& fileToExtract) const noexcept(false);
 
   /**
-   * @brief Patch the resupply values of a file and save it in @link m_outputPath @endlink
-   * @param file File to patch
+   * @brief Patch the resupply values of a file and save it in the provided path
+   * @param inputFile File to patch
+   * @param outputFile Output file path
    * @throw std::runtime_error
    */
-  void patchFile(const std::filesystem::path& file) const noexcept(false);
+  void patchFile(const std::filesystem::path& inputFile,
+                 const std::filesystem::path& outputFile) const noexcept(false);
 
   /**
    * @brief Extract item lists from all files in the provided path and replace them with includes

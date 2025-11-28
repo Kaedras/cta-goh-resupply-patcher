@@ -142,7 +142,7 @@ Patcher::~Patcher() noexcept {
 }
 
 void Patcher::patchVanilla() const noexcept(false) {
-  patchFile(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
+  patchFileFromArchive(m_gamePath / "resource/properties.pak", "properties/resupply.inc");
 }
 
 void Patcher::patchMod(const Mod& mod) const noexcept(false) {
@@ -150,11 +150,11 @@ void Patcher::patchMod(const Mod& mod) const noexcept(false) {
 
   for (const auto& [archive, files] : mod.archives) {
     for (const auto& file : files) {
-      patchFile(path / archive, file);
+      patchFileFromArchive(path / archive, file);
     }
   }
   for (const auto& file : mod.files) {
-    patchFile(file);
+    patchFile(path / file, m_outputPath / file);
   }
 }
 
@@ -282,8 +282,9 @@ void Patcher::patch(std::vector<char>& data) noexcept(false) {
   swap(data, out);
 }
 
-void Patcher::patchFile(const std::filesystem::path& archiveFile,
-                        const std::filesystem::path& fileToExtract) const noexcept(false) {
+void Patcher::patchFileFromArchive(const std::filesystem::path& archiveFile,
+                                   const std::filesystem::path& fileToExtract) const
+    noexcept(false) {
   vector<char> data = loadFromArchive(archiveFile, fileToExtract);
   patch(data);
 
@@ -292,13 +293,12 @@ void Patcher::patchFile(const std::filesystem::path& archiveFile,
   saveToFile(data, targetFile);
 }
 
-void Patcher::patchFile(const std::filesystem::path& file) const noexcept(false) {
-  vector<char> data = loadFromFile(file);
+void Patcher::patchFile(const std::filesystem::path& inputFile,
+                        const std::filesystem::path& outputFile) const noexcept(false) {
+  vector<char> data = loadFromFile(inputFile);
   patch(data);
 
-  fs::path targetFile = m_outputPath / file;
-
-  saveToFile(data, targetFile);
+  saveToFile(data, outputFile);
 }
 
 void Patcher::generateItemsAll(const Mod& mod) const {
