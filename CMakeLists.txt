@@ -58,6 +58,7 @@ add_executable(resupply_patcher
         src/Timer.h
         src/Mods.h
         src/mods/Valour.h
+        src/mods/Hortens_Frontline.h
         src/mods/Hotmod1986.h
         src/mods/West81.h
         src/mods/Mace.h
