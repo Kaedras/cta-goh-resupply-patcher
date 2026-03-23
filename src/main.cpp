@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
       p.patchVanilla();  // hotmod 1968 does not overwrite the original "resupply.inc"
       p.patchMod(mods::Hotmod);
     } else if (program.is_used("--west81")) {
+      // todo: check if `resupply.inc` even gets loaded as mod contains `resuppply_vanilla.inc`
       p.patchVanilla();  // west 81 does not overwrite the original "resupply.inc"
       p.patchMod(mods::West81);
     } else if (program.is_used("--mace")) {
