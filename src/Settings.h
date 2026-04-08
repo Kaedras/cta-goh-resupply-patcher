@@ -2,7 +2,7 @@
 
 struct Settings {
   struct defaults {
-    static constexpr int resupplyPeriod     = 1;
+    static constexpr int resupplyPeriod     = 5;
     static constexpr int regenerationPeriod = 1;
     static constexpr int radiusMultiplier   = 4;
     static constexpr int limitMultiplier    = 10;
