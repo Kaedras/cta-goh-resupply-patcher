@@ -7,4 +7,4 @@
  * https://steamcommunity.com/sharedfiles/filedetails/?id=3359417100
  */
 MOD(HortensFrontline, 3359417100)
-MOD_ARCHIVES(HortensFrontline, "properties/resupply.inc")
+MOD_ARCHIVES(HortensFrontline, Archive{"properties.pak", "properties/resupply.inc"})
