@@ -62,6 +62,7 @@ add_executable(resupply_patcher
         src/mods/Hotmod1986.h
         src/mods/West81.h
         src/mods/Mace.h
+        src/mods/Indomitus.h
 )
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)

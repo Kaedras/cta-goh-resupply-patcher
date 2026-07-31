@@ -47,6 +47,7 @@ int main(int argc, char** argv) {
   modGroup.add_argument("-W", "--west81").help("patch west81").flag();
   modGroup.add_argument("-M", "--mace").help("patch mace").flag();
   modGroup.add_argument("-hf", "--hortens-frontline").help("patch hortens frontline").flag();
+  modGroup.add_argument("-i", "--indomitus").help("patch indomitus").flag();
 
   program.add_argument("out").help("output directory").required();
 
@@ -78,6 +79,8 @@ int main(int argc, char** argv) {
       p.patchMod(mods::Mace);
     } else if (program.is_used("--hortens-frontline")) {
       p.patchMod(mods::HortensFrontline);
+    } else if (program.is_used("--indomitus")) {
+      p.patchMod(mods::Indomitus);
     } else {
       p.patchVanilla();
     }
