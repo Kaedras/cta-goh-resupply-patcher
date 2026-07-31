@@ -10,6 +10,8 @@ Please note that there has not been any testing on Windows.
 - [MACE](https://steamcommunity.com/sharedfiles/filedetails/?id=2905667604)
 - [Hotmod 1968](https://steamcommunity.com/sharedfiles/filedetails/?id=2614199156)
 - [West 81](https://steamcommunity.com/sharedfiles/filedetails/?id=2897299509)
+- [Hortens Frontline](https://steamcommunity.com/sharedfiles/filedetails/?id=3359417100)
+- [Indomitus](https://steamcommunity.com/sharedfiles/filedetails/?id=3494196322)
 
 ## Usage
 
