@@ -36,6 +36,13 @@ A message will be printed if any file inside the output directory has been modif
 
 (*): dependency will be fetched by cmake if not available
 
+## Compiling
+
+```shell
+cmake -B build
+cmake --build build -j $(nproc)
+```
+
 ## Adding support for another mod
 
 Adding support for another mod is pretty straightforward:
