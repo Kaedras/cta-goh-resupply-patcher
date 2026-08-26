@@ -1,6 +1,7 @@
 # Resupply patcher for Call to Arms - Gates of Hell: Ostfront
 
-This is a patcher to quickly update my [Increased Supply](https://steamcommunity.com/sharedfiles/filedetails/?id=3395398956) mod and its variants.
+This is a patcher to quickly update
+my [Increased Supply](https://steamcommunity.com/sharedfiles/filedetails/?id=3395398956) mod and its variants.
 
 Please note that there has not been any testing on Windows.
 
@@ -38,6 +39,7 @@ A message will be printed if any file inside the output directory has been modif
 ## Adding support for another mod
 
 Adding support for another mod is pretty straightforward:
+
 1. Add a header file to `src/mods/` by copying e.g. `Mace.h` and modifying the values accordingly.
 2. Include it in `src/Mods.h`.
 3. Add a command line option in `main()`.
