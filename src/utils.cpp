@@ -9,6 +9,10 @@
 #include <spdlog/spdlog.h>
 #include <zip.h>
 
+#ifdef _WIN32
+#include <winreg.h>
+#endif
+
 using namespace std;
 namespace fs = std::filesystem;
 
@@ -142,6 +146,7 @@ void saveToFile(const std::vector<char>& data, const std::filesystem::path& file
 std::filesystem::path getSteamPath() noexcept(false) {
   Timer t(__FUNCTION__);
 
+#ifdef __unix__
   fs::path home                = getenv("HOME");
   static constexpr array paths = {".local/share/Steam", ".steam/steam",
                                   ".var/app/com.valvesoftware.Steam/.local/share/Steam"};
@@ -153,6 +158,28 @@ std::filesystem::path getSteamPath() noexcept(false) {
       return p;
     }
   }
+#else
+  WCHAR buffer[512];
+  DWORD bufferSize = sizeof(buffer);
+  DWORD dataSize   = bufferSize;
+
+  auto result =
+      RegQueryValueExW(HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Valve\\Steam\\InstallPath", NULL,
+                       NULL, (LPBYTE)buffer, &dataSize);
+  if (result == ERROR_SUCCESS) {
+    return buffer;
+  }
+  spdlog::warn("RegQueryValueExW failed: {}", result);
+  dataSize = bufferSize;
+  result   = RegQueryValueExW(HKEY_LOCAL_MACHINE, "SOFTWARE\\Valve\\Steam\\InstallPath", NULL, NULL,
+                              (LPBYTE)buffer, &dataSize);
+  if (result == ERROR_SUCCESS) {
+    return buffer;
+  }
+  spdlog::warn("RegQueryValueExW failed: {}", result);
+
+#endif
+
   throw runtime_error("Could not find Steam installation");
 }
 
