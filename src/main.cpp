@@ -29,28 +29,26 @@ spdlog::level::level_enum verbosityToLogLevel(int verbosity) {
 int main(int argc, char** argv) {
   int verbosity = 0;
 
-  argparse::ArgumentParser program("resupply_patcher", RESUPPLY_PATCHER_VERSION,
-                                   argparse::default_arguments::help);
+  argparse::ArgumentParser program("resupply_patcher", RESUPPLY_PATCHER_VERSION);
 
-  program.add_argument("-v", "--verbose")
+  program.add_argument("-V", "--verbose")
       .action([&](const auto&) {
         verbosity++;
       })
       .append()
       .flag()
       .nargs(0)
-      .help("increase output verbosity")
-      .flag();
-
-  auto& modGroup = program.add_mutually_exclusive_group();
-  modGroup.add_argument("-V", "--valour").help("patch valour").flag();
-  modGroup.add_argument("-H", "--hotmod").help("patch hotmod 1986").flag();
-  modGroup.add_argument("-W", "--west81").help("patch west81").flag();
-  modGroup.add_argument("-M", "--mace").help("patch mace").flag();
-  modGroup.add_argument("-HF", "--hortens-frontline").help("patch hortens frontline").flag();
-  modGroup.add_argument("-I", "--indomitus").help("patch indomitus").flag();
+      .help("increase output verbosity");
 
   program.add_argument("out").help("output directory").required();
+
+  auto& modGroup = program.add_mutually_exclusive_group();
+  modGroup.add_argument("--valour").help("patch valour").flag();
+  modGroup.add_argument("--hotmod").help("patch hotmod 1986").flag();
+  modGroup.add_argument("--west81").help("patch west81").flag();
+  modGroup.add_argument("--mace").help("patch mace").flag();
+  modGroup.add_argument("--hortens-frontline").help("patch hortens frontline").flag();
+  modGroup.add_argument("--indomitus").help("patch indomitus").flag();
 
   auto& inputPathsGroup = program.add_group("input paths");
   inputPathsGroup.add_argument("--library", "-l").help("steam library path");
