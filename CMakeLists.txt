@@ -46,28 +46,33 @@ FetchContent_MakeAvailable(argparse spdlog libzip)
 
 find_package(OpenSSL REQUIRED)
 
+add_library(patcher
+    src/Item.h
+    src/Patcher.cpp
+    src/Patcher.h
+    src/Timer.cpp
+    src/Timer.h
+    src/Mods.h
+    src/mods/Valour.h
+    src/mods/Hortens_Frontline.h
+    src/mods/Hotmod1986.h
+    src/mods/West81.h
+    src/mods/Mace.h
+    src/mods/Indomitus.h
+    src/utils.cpp
+    src/utils.h
+    src/constants.h
+    src/types.h
+)
+target_compile_options(patcher PRIVATE -Wall -Wextra -Wpedantic)
+target_link_libraries(patcher PRIVATE spdlog::spdlog zip OpenSSL::SSL OpenSSL::Crypto)
+
 add_executable(resupply_patcher
-        src/main.cpp
-        src/Item.h
-        src/Patcher.cpp
-        src/Patcher.h
-        src/Timer.cpp
-        src/Timer.h
-        src/Mods.h
-        src/mods/Valour.h
-        src/mods/Hortens_Frontline.h
-        src/mods/Hotmod1986.h
-        src/mods/West81.h
-        src/mods/Mace.h
-        src/mods/Indomitus.h
-        src/utils.cpp
-        src/utils.h
-        src/constants.h
-        src/types.h
+    src/main.cpp
 )
 
 configure_file(src/version.h.in version.h)
 target_include_directories(resupply_patcher PUBLIC ${CMAKE_BINARY_DIR})
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
-target_link_libraries(resupply_patcher argparse spdlog::spdlog zip OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(resupply_patcher PRIVATE argparse spdlog::spdlog patcher)
