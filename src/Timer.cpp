@@ -1,7 +1,5 @@
 #include "Timer.h"
 
-#include "spdlog/fmt/bundled/base.h"
-#include "spdlog/fmt/bundled/format.h"
 #include <spdlog/spdlog.h>
 #include <utility>
 
