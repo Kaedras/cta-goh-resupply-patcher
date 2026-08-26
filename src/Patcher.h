@@ -95,5 +95,5 @@ private:
   std::filesystem::path m_gamePath;
   std::filesystem::path m_workshopPath;
 
-  std::unordered_map<std::filesystem::path, sha256sum> m_outputChecksums;
+  std::unordered_map<std::filesystem::path, md5sum> m_outputChecksums;
 };

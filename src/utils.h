@@ -78,9 +78,9 @@ void multiplyNumberInString(std::string& line, int multiplier) noexcept(false);
 void replaceNumberInString(std::string& line, int newValue) noexcept(false);
 
 /**
- * @brief Calculate the SHA256 sum of a file
+ * @brief Calculate the md5 sum of a file
  */
-sha256sum sha256(const std::filesystem::path& file) noexcept(false);
+std::array<uint8_t, 16> md5(const std::filesystem::path& file) noexcept(false);
 
 void ltrim(std::string& line) noexcept;
 void rtrim(std::string& line) noexcept;

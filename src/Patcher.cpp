@@ -59,7 +59,7 @@ Patcher::Patcher(std::filesystem::path outputDir, bool autodetect) noexcept(fals
       if (entry.is_directory()) {
         continue;
       }
-      m_outputChecksums[fs::relative(entry.path(), m_outputPath)] = sha256(entry.path());
+      m_outputChecksums[fs::relative(entry.path(), m_outputPath)] = md5(entry.path());
     }
   }
 
@@ -76,7 +76,7 @@ Patcher::~Patcher() noexcept {
     }
     fs::path relativePath = fs::relative(entry.path(), m_outputPath);
     try {
-      if (m_outputChecksums[relativePath] != sha256(entry.path())) {
+      if (m_outputChecksums[relativePath] != md5(entry.path())) {
         cout << "\033[33m" << "contents of " << entry.path().string() << " have changed\033[0m\n";
       }
     } catch (const runtime_error& e) {

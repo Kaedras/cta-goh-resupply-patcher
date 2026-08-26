@@ -50,8 +50,6 @@ else()
     find_package(spdlog CONFIG REQUIRED)
 endif()
 
-find_package(OpenSSL REQUIRED)
-
 add_library(patcher
     src/Item.h
     src/Patcher.cpp
@@ -69,11 +67,13 @@ add_library(patcher
     src/utils.h
     src/constants.h
     src/types.h
+    src/md5.h
+    src/md5.cpp
 )
 if(UNIX)
     target_compile_options(patcher PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-target_link_libraries(patcher PRIVATE libzip::zip OpenSSL::SSL OpenSSL::Crypto spdlog::spdlog)
+target_link_libraries(patcher PRIVATE libzip::zip spdlog::spdlog)
 
 add_executable(resupply_patcher
     src/main.cpp

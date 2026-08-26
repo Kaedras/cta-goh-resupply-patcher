@@ -2,10 +2,11 @@
 
 #include "Timer.h"
 #include "constants.h"
+#include "md5.h"
+#include "types.h"
 
 #include <cstring>
 #include <fstream>
-#include <openssl/evp.h>
 #include <spdlog/spdlog.h>
 #include <zip.h>
 
@@ -219,54 +220,16 @@ void replaceNumberInString(std::string& line, int newValue) noexcept(false) {
   spdlog::trace("replaced number {} with {}", number, newValue);
 }
 
-sha256sum sha256(const std::filesystem::path& file) noexcept(false) {
+std::array<uint8_t, 16> md5(const std::filesystem::path& file) noexcept(false) {
   Timer t(__FUNCTION__ + " "s + file.string());
 
-  // check if file exists
-  if (!fs::exists(file)) {
-    throw runtime_error("file does not exist");
+  const FilePtr f(fopen(file.string().c_str(), "rb"));
+  if (!f) {
+    const int e = errno;
+    throw runtime_error(format("error opening {}: {}", file.string(), strerror(e)));
   }
 
-  ifstream input(file, ios::binary);
-
-  MdCtxPtr mdctx(EVP_MD_CTX_new());
-  unsigned int digestLength;
-
-  if (mdctx == nullptr) {
-    throw runtime_error("EVP_MD_CTX_new error");
-  }
-
-  // initialize
-  if (1 != EVP_DigestInit_ex(mdctx.get(), EVP_sha256(), nullptr)) {
-    throw runtime_error("EVP_DigestInit_ex error");
-  }
-
-  constexpr size_t buffer_size{1 << 12};
-  vector buffer(buffer_size, '\0');
-
-  while (input.good()) {
-    input.read(buffer.data(), buffer_size);
-    if (1 != EVP_DigestUpdate(mdctx.get(), buffer.data(), input.gcount())) {
-      throw runtime_error("EVP_DigestUpdate error");
-    }
-  }
-
-  // allocate memory
-  DigestPtr digest(static_cast<unsigned char*>(OPENSSL_malloc(EVP_MD_size(EVP_sha256()))));
-
-  if (digest == nullptr) {
-    throw runtime_error("OPENSSL_malloc error");
-  }
-
-  // finalize data
-  if (1 != EVP_DigestFinal_ex(mdctx.get(), digest.get(), &digestLength)) {
-    throw runtime_error("EVP_DigestFinal_ex error");
-  }
-
-  sha256sum checksum;
-  memcpy(checksum.data(), digest.get(), digestLength);
-
-  return checksum;
+  return md5File(f.get());
 }
 
 void ltrim(std::string& line) noexcept {

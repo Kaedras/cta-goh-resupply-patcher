@@ -1,11 +1,11 @@
 #pragma once
 
 #include <array>
+#include <cstdint>
+#include <cstdio>
 #include <memory>
-#include <openssl/evp.h>
-#include <openssl/types.h>
 
-using sha256sum = std::array<char, 32>;
+using md5sum = std::array<uint8_t, 16>;
 
 /**
  * @brief Data structure representing a number inside a string.
@@ -16,20 +16,11 @@ struct data_t {
   int value;
 };
 
-struct MdCtxDeleter {
-  void operator()(EVP_MD_CTX* m) const {
-    if (m) {
-      EVP_MD_CTX_free(m);
+struct FileCloser {
+  void operator()(FILE* f) const {
+    if (f) {
+      fclose(f);
     }
   }
 };
-using MdCtxPtr = std::unique_ptr<EVP_MD_CTX, MdCtxDeleter>;
-
-struct DigestDeleter {
-  void operator()(unsigned char* d) const {
-    if (d) {
-      OPENSSL_free(d);
-    }
-  }
-};
-using DigestPtr = std::unique_ptr<unsigned char, DigestDeleter>;
+using FilePtr = std::unique_ptr<FILE, FileCloser>;
