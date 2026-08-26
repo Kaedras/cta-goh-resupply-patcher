@@ -4,9 +4,9 @@
 #include "constants.h"
 
 #include <cstring>
+#include <fstream>
 #include <openssl/evp.h>
 #include <spdlog/spdlog.h>
-#include <vdf_parser.hpp>
 #include <zip.h>
 
 using namespace std;
@@ -17,16 +17,17 @@ std::generator<const std::filesystem::path&> getSteamLibraries() {
 
   ifstream libraryFoldersFile(steamPath / "steamapps/libraryfolders.vdf");
 
-  auto root = tyti::vdf::read(libraryFoldersFile);
-
-  for (const auto& library : root.childs | views::values) {
-    // skip empty libraries
-    if (library->childs["apps"] == nullptr) {
-      spdlog::trace("skipping empty library {}", library->attribs["path"]);
-      continue;
+  string line;
+  while (getline(libraryFoldersFile, line)) {
+    smatch match;
+    if (regex_match(line, match, re::steamLibrary)) {
+      if (match.size() < 2) {
+        spdlog::error("regex error, match: {}", match.str());
+      } else {
+        spdlog::info("match: {}", match[1].str());
+        co_yield match[1].str();
+      }
     }
-
-    co_yield library->attribs["path"];
   }
 }
 

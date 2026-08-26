@@ -34,4 +34,6 @@ const std::regex
     itemsEngineerRemove(R"(\w*\(define "items_engineer"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
 const std::regex
     itemsExplosivesRemove(R"(\w*\(define "items_explosives"\r\n([\s\S]+?)\r\n\)(?:\r\n)+)");
+
+const std::regex steamLibrary(R"-(\s+"path"\s+"(.*)")-");
 }  // namespace re

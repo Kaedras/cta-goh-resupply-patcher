@@ -44,13 +44,6 @@ set(BUILD_DOC OFF)
 
 FetchContent_MakeAvailable(argparse spdlog libzip)
 
-# fetch vdf parser
-file(DOWNLOAD
-        https://raw.githubusercontent.com/TinyTinni/ValveFileVDF/b4342ffcc5671166a92f6e868a702028d5bed880/include/vdf_parser.hpp
-        deps/vdf_parser.hpp
-        EXPECTED_HASH SHA512=2635ba81d24024bd1e5c35821aff31a235a4c1b2f0a1fbe157d76da1cecaf95918be922ef1ad94a531b842652fccecd9732dd9a56b57c5a1b71bba5e1cafa76d
-)
-
 find_package(OpenSSL REQUIRED)
 
 add_executable(resupply_patcher
@@ -78,4 +71,3 @@ target_include_directories(resupply_patcher PUBLIC ${CMAKE_BINARY_DIR})
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(resupply_patcher argparse spdlog::spdlog zip OpenSSL::SSL OpenSSL::Crypto)
-target_include_directories(resupply_patcher PRIVATE ${CMAKE_BINARY_DIR}/deps)

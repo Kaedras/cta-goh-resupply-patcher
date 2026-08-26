@@ -12,7 +12,6 @@
 #include <sstream>
 #include <stdexcept>
 #include <utility>
-#include <vdf_parser.hpp>
 
 #include "Item.h"
 #include "Settings.h"
