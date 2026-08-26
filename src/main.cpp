@@ -13,6 +13,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+namespace {
 spdlog::level::level_enum verbosityToLogLevel(int verbosity) {
   switch (verbosity) {
   case 1:
@@ -25,6 +26,7 @@ spdlog::level::level_enum verbosityToLogLevel(int verbosity) {
     return spdlog::level::err;
   }
 }
+}  // namespace
 
 int main(int argc, char** argv) {
   int verbosity = 0;
