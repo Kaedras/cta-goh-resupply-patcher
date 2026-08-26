@@ -63,6 +63,10 @@ add_executable(resupply_patcher
         src/mods/West81.h
         src/mods/Mace.h
         src/mods/Indomitus.h
+        src/utils.cpp
+        src/utils.h
+        src/constants.h
+        src/types.h
 )
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)

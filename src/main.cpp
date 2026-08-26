@@ -43,13 +43,18 @@ int main(int argc, char** argv) {
 
   auto& modGroup = program.add_mutually_exclusive_group();
   modGroup.add_argument("-V", "--valour").help("patch valour").flag();
-  modGroup.add_argument("-H", "--hotmod").help("patch hotmod").flag();
+  modGroup.add_argument("-H", "--hotmod").help("patch hotmod 1986").flag();
   modGroup.add_argument("-W", "--west81").help("patch west81").flag();
   modGroup.add_argument("-M", "--mace").help("patch mace").flag();
-  modGroup.add_argument("-hf", "--hortens-frontline").help("patch hortens frontline").flag();
-  modGroup.add_argument("-i", "--indomitus").help("patch indomitus").flag();
+  modGroup.add_argument("-HF", "--hortens-frontline").help("patch hortens frontline").flag();
+  modGroup.add_argument("-I", "--indomitus").help("patch indomitus").flag();
 
   program.add_argument("out").help("output directory").required();
+
+  auto& inputPathsGroup = program.add_group("input paths");
+  inputPathsGroup.add_argument("--library", "-l").help("steam library path");
+  inputPathsGroup.add_argument("--workshop", "-w").help("steam workshop path");
+  inputPathsGroup.add_argument("--game", "-g").help("game path");
 
   try {
     program.parse_args(argc, argv);
@@ -62,7 +67,25 @@ int main(int argc, char** argv) {
   spdlog::set_level(verbosityToLogLevel(verbosity));
 
   fs::path outDir = program.get<string>("out");
-  Patcher p(outDir);
+
+  bool autodetect = true;
+  if (program.is_used("--library") || program.is_used("--workshop") || program.is_used("--game")) {
+    autodetect = false;
+  }
+
+  Patcher p(outDir, autodetect);
+
+  if (!autodetect) {
+    if (auto value = program.present("--library")) {
+      p.setLibraryPath(*value);
+    }
+    if (auto value = program.present("--workshop")) {
+      p.setWorkshopPath(*value);
+    }
+    if (auto value = program.present("--game")) {
+      p.setGamePath(*value);
+    }
+  }
 
   try {
     if (program.is_used("--valour")) {

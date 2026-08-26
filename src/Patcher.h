@@ -1,24 +1,42 @@
 #pragma once
 
+#include "types.h"
+
 #include <array>
-#include <cstddef>
 #include <filesystem>
-#include <string>
 #include <unordered_map>
 #include <vector>
 
 class Mod;
 
-using sha256sum = std::array<char, 32>;
-
 class Patcher {
 public:
   /**
-   * @throw std::runtime_error When the game directory cannot be found
+   * @param outputDir The output directory
+   * @param autodetect Enable or disable autodetection of steam library directory
+   * @throw std::runtime_error
    */
-  explicit Patcher(std::filesystem::path outputDir) noexcept(false);
+  explicit Patcher(std::filesystem::path outputDir, bool autodetect = true) noexcept(false);
 
   ~Patcher() noexcept;
+
+  /**
+   * @brief Attempt to set the game and workshop paths based on the provided library path
+   * @param libraryPath Path to the steam library
+   */
+  void setLibraryPath(const std::filesystem::path& libraryPath) noexcept;
+
+  /**
+   * @brief Set the game path
+   * @param gamePath Path to the game
+   */
+  void setGamePath(const std::filesystem::path& gamePath) noexcept;
+
+  /**
+   * @brief Set the steam workshop path
+   * @param workshopPath Path to the steam workshop directory
+   */
+  void setWorkshopPath(const std::filesystem::path& workshopPath) noexcept;
 
   /**
    * @brief Patch vanilla resupply values
@@ -40,60 +58,12 @@ public:
   void removeResupplyRestrictions(const Mod& mod) const;
 
 private:
-  static constexpr size_t bufferSize = 1024 * 1024;
-
-  /**
-   * @brief Extract a file from an archive
-   * @param archiveFile Archive file to read
-   * @param fileToExtract File to extract from inside the archive
-   * @throw std::runtime_error
-   */
-  static std::vector<char>
-  loadFromArchive(const std::filesystem::path& archiveFile,
-                  const std::filesystem::path& fileToExtract) noexcept(false);
-
-  /**
-   * @brief Read the specified file
-   * @param file File to read
-   * @throw std::runtime_error
-   */
-  static std::vector<char> loadFromFile(const std::filesystem::path& file) noexcept(false);
-
-  /**
-   * @brief Read a text file and store its contents in a string
-   * @param file File to read
-   * @return String containing the file contents
-   * @throw std::runtime_error
-   */
-  static std::string readFileToString(const std::filesystem::path& file) noexcept(false);
-
   /**
    * @brief Patch resupply values of the provided data
    * @param data File data to patch
    * @throw std::runtime_error
    */
   static void patch(std::vector<char>& data) noexcept(false);
-
-  /**
-   * @brief Save the provided data to the specified path
-   * @param data Data to save
-   * @param file Output file
-   * @throw std::runtime_error
-   */
-  static void saveToFile(const std::vector<char>& data,
-                         const std::filesystem::path& file) noexcept(false);
-
-  /**
-   * @brief Get the game path
-   * @throw std::runtime_error
-   */
-  static std::filesystem::path getGamePath() noexcept(false);
-
-  /**
-   * @brief Get the steam directory
-   * @throw std::runtime_error
-   */
-  static std::filesystem::path getSteamPath() noexcept(false);
 
   /**
    * @brief Extract a file from an archive, patch the resupply values, and save it in
@@ -111,8 +81,8 @@ private:
    * @param outputFile Output file path
    * @throw std::runtime_error
    */
-  void patchFile(const std::filesystem::path& inputFile,
-                 const std::filesystem::path& outputFile) const noexcept(false);
+  static void patchFile(const std::filesystem::path& inputFile,
+                        const std::filesystem::path& outputFile) noexcept(false);
 
   /**
    * @brief Extract item lists from all files in the provided path and replace them with includes
@@ -120,47 +90,6 @@ private:
   void generateItemsAll(const Mod& mod) const;
 
   void replaceResupply(const Mod& mod) const;
-
-  /**
-   * @brief Data structure representing a number inside a string.
-   */
-  struct data_t {
-    size_t offset;
-    size_t size;
-    int value;
-  };
-
-  /**
-   * @brief Extracts the first number found in the given string.
-   * @param line The string to search for a number.
-   * @throw std::runtime_error
-   */
-  static data_t extractNumberFromString(const std::string& line) noexcept(false);
-
-  /**
-   * @brief Multiplies the first number inside a string with the given multiplier.
-   * @param line The string to search for a number.
-   * @param multiplier Multiplier to use.
-   * @throw std::runtime_error
-   */
-  static void multiplyNumberInString(std::string& line, int multiplier) noexcept(false);
-
-  /**
-   * @brief Replaces the first number inside a string with the given value.
-   * @param line The string to search for a number.
-   * @param newValue New value to use.
-   * @throw std::runtime_error
-   */
-  static void replaceNumberInString(std::string& line, int newValue) noexcept(false);
-
-  /**
-   * @brief Calculate the SHA256 sum of a file
-   */
-  static sha256sum sha256(const std::filesystem::path& file) noexcept(false);
-
-  static void ltrim(std::string& line) noexcept;
-  static void rtrim(std::string& line) noexcept;
-  static void trim(std::string& line) noexcept;
 
   std::filesystem::path m_outputPath;
   std::filesystem::path m_gamePath;
