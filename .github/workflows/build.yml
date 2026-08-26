@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install -y libzip-dev zipcmp zipmerge ziptool
+          sudo apt-get install -y libargparse-dev libspdlog-dev libzip-dev zipcmp zipmerge ziptool
 
       - name: Build patcher
         run: |

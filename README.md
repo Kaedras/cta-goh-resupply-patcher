@@ -29,7 +29,11 @@ A message will be printed if any file inside the output directory has been modif
 
 - GCC >= 15.1
 - CMake 3.31.7
-- libzip 1.11.3
+- argparse (*)
+- libzip (*)
+- spdlog (*)
+
+(*): dependency will be fetched by cmake if not available
 
 ## Adding support for another mod
 
