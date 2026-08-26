@@ -40,7 +40,7 @@ std::filesystem::path getGamePath(const std::filesystem::path& libraryPath) noex
     for (const auto& library : getSteamLibraries()) {
       spdlog::trace("checking library {}", library.string());
 
-      fs::path gamePath = libraryPath / gameDirectory;
+      fs::path gamePath = library / gameDirectory;
       if (fs::exists(gamePath)) {
         return gamePath;
       }
