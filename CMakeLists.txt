@@ -70,7 +70,9 @@ add_library(patcher
     src/constants.h
     src/types.h
 )
-target_compile_options(patcher PRIVATE -Wall -Wextra -Wpedantic)
+if(UNIX)
+    target_compile_options(patcher PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 target_link_libraries(patcher PRIVATE libzip::zip OpenSSL::SSL OpenSSL::Crypto spdlog::spdlog)
 
 add_executable(resupply_patcher
@@ -80,5 +82,7 @@ add_executable(resupply_patcher
 configure_file(src/version.h.in version.h)
 target_include_directories(resupply_patcher PUBLIC ${CMAKE_BINARY_DIR})
 
-target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
+if(UNIX)
+    target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
+endif()
 target_link_libraries(resupply_patcher PRIVATE argparse::argparse spdlog::spdlog patcher)
