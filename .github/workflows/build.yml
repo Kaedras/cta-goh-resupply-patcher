@@ -23,7 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install -y libzip-dev
+          sudo apt-get install -y libzip-dev zipcmp
 
       - name: Build patcher
         run: |
