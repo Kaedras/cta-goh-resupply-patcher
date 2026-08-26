@@ -14,15 +14,19 @@ FetchContent_Declare(
 FetchContent_Declare(
         spdlog
         GIT_REPOSITORY https://github.com/gabime/spdlog.git
-        GIT_TAG v1.15.3
+        GIT_TAG v1.17.0
 )
 # fetch libzip
 FetchContent_Declare(
         libzip
         GIT_REPOSITORY https://github.com/nih-at/libzip.git
-        GIT_TAG v1.11.3
+        GIT_TAG v1.11.4
         FIND_PACKAGE_ARGS
 )
+
+# configure spdlog
+set(SPDLOG_USE_STD_FORMAT ON)
+
 # disable unneeded libzip options
 set(ENABLE_COMMONCRYPTO OFF)
 set(ENABLE_GNUTLS OFF)
@@ -42,9 +46,9 @@ FetchContent_MakeAvailable(argparse spdlog libzip)
 
 # fetch vdf parser
 file(DOWNLOAD
-        https://raw.githubusercontent.com/TinyTinni/ValveFileVDF/e15aa4cfe52761c71ce8f5c27b5f50c523c25e58/include/vdf_parser.hpp
+        https://raw.githubusercontent.com/TinyTinni/ValveFileVDF/b4342ffcc5671166a92f6e868a702028d5bed880/include/vdf_parser.hpp
         deps/vdf_parser.hpp
-        EXPECTED_HASH SHA512=f2d85be10941c0b5da74c10a19b1f74f068188a246b2cb34f5af31c84d45f29bb0a22a0ffe36fa9c8310a101d1be6a94a263882c7534c93e483e42bef802d657
+        EXPECTED_HASH SHA512=2635ba81d24024bd1e5c35821aff31a235a4c1b2f0a1fbe157d76da1cecaf95918be922ef1ad94a531b842652fccecd9732dd9a56b57c5a1b71bba5e1cafa76d
 )
 
 find_package(OpenSSL REQUIRED)
