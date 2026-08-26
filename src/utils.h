@@ -3,7 +3,10 @@
 #include "types.h"
 
 #include <filesystem>
+#include <generator>
 #include <vector>
+
+std::generator<const std::filesystem::path&> getSteamLibraries();
 
 std::filesystem::path getWorkshopPath(const std::filesystem::path& libraryPath) noexcept(false);
 

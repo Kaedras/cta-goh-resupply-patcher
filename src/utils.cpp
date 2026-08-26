@@ -12,6 +12,24 @@
 using namespace std;
 namespace fs = std::filesystem;
 
+std::generator<const std::filesystem::path&> getSteamLibraries() {
+  fs::path steamPath = getSteamPath();
+
+  ifstream libraryFoldersFile(steamPath / "steamapps/libraryfolders.vdf");
+
+  auto root = tyti::vdf::read(libraryFoldersFile);
+
+  for (const auto& library : root.childs | views::values) {
+    // skip empty libraries
+    if (library->childs["apps"] == nullptr) {
+      spdlog::trace("skipping empty library {}", library->attribs["path"]);
+      continue;
+    }
+
+    co_yield library->attribs["path"];
+  }
+}
+
 fs::path getWorkshopPath(const fs::path& libraryPath) noexcept(false) {
   return fs::canonical(libraryPath / "workshop/content/400750");
 }
@@ -19,27 +37,12 @@ fs::path getWorkshopPath(const fs::path& libraryPath) noexcept(false) {
 std::filesystem::path getGamePath(const std::filesystem::path& libraryPath) noexcept(false) {
   Timer t(__FUNCTION__);
   if (libraryPath.empty()) {
-    fs::path steamPath = getSteamPath();
+    for (const auto& library : getSteamLibraries()) {
+      spdlog::trace("checking library {}", library.string());
 
-    ifstream libraryFoldersFile(steamPath / "steamapps/libraryfolders.vdf");
-
-    auto root = tyti::vdf::read(libraryFoldersFile);
-
-    // iterate over libraries
-    for (const auto& library : root.childs | views::values) {
-      spdlog::trace("checking library {}", library->attribs["path"]);
-      // skip empty libraries
-      if (library->childs["apps"] == nullptr || library->childs["apps"]->attribs.empty()) {
-        continue;
-      }
-
-      // iterate over keys in apps
-      for (const auto& appID : library->childs["apps"]->attribs | views::keys) {
-        if (appID == appidString) {
-          fs::path gamePath = fs::path(library->attribs["path"]) / gameDirectory;
-          spdlog::trace("found game in {}", gamePath.string());
-          return gamePath;
-        }
+      fs::path gamePath = libraryPath / gameDirectory;
+      if (fs::exists(gamePath)) {
+        return gamePath;
       }
     }
   } else {
