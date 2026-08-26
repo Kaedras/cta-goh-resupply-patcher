@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.31)
-project(resupply_patcher)
+project(resupply_patcher LANGUAGES CXX VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 23)
 
@@ -68,6 +68,9 @@ add_executable(resupply_patcher
         src/constants.h
         src/types.h
 )
+
+configure_file(src/version.h.in version.h)
+target_include_directories(resupply_patcher PUBLIC ${CMAKE_BINARY_DIR})
 
 target_compile_options(resupply_patcher PRIVATE -Wall -Wextra -Wpedantic)
 target_link_libraries(resupply_patcher argparse spdlog::spdlog zip OpenSSL::SSL OpenSSL::Crypto)

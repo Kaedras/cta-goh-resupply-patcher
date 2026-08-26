@@ -1,0 +1,3 @@
+#pragma once
+
+#define RESUPPLY_PATCHER_VERSION "@resupply_patcher_VERSION@"

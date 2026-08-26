@@ -8,7 +8,7 @@
 
 #include "Mods.h"
 #include "Patcher.h"
-#include "spdlog/common.h"
+#include "version.h"
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -29,7 +29,8 @@ spdlog::level::level_enum verbosityToLogLevel(int verbosity) {
 int main(int argc, char** argv) {
   int verbosity = 0;
 
-  argparse::ArgumentParser program("resupply_patcher", "1.0", argparse::default_arguments::help);
+  argparse::ArgumentParser program("resupply_patcher", RESUPPLY_PATCHER_VERSION,
+                                   argparse::default_arguments::help);
 
   program.add_argument("-v", "--verbose")
       .action([&](const auto&) {
